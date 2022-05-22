@@ -63,16 +63,22 @@ def k_means(features_df):
     lists = [] # list that holds all the (sub)lists of seperate features, e.g. lists = [[feat_1],[feat_2],[feat_3]]
     centroids = [] # list that holds the feature vector of the centroid !
 
-    # STEP 1: initialize the centroids
+    # STEP 1:
+    # Initialise k clusters' centroids (c1, c2, …, ck) in a way such that  the initial centroids are placed as far as possible from each other.
     cols = int(len(df.columns))
+    # print("cols:", cols)
     for c in df.columns:
         list_xyz = df[c].tolist()
         lists.append(list_xyz)
+
+    # create the resolution based on the first feature
     mini = min(lists[0])
     maxi = max(lists[0])
     res = (maxi - mini) / k
+    # print("mini, maxi, res:", mini, maxi, res)
 
-    for d in range(k):
+    # initialize the k centroids far from each other
+    for k in range(k):
         centroid = []
         for i in range(cols):
             if i == 0:
@@ -80,39 +86,62 @@ def k_means(features_df):
                 mini = mini + res
             else:
                 centroid.append(random.choice(lists[i]))
+        # add the centroid to the list of centroids --> k in number. As many as the number of classes.
         centroids.append(centroid)
 
-    # Work with numpy arrays
+    # turn the centroids into numpy element
     centroids_arr = np.array(centroids)
-    points_arr = df.to_numpy()
+    # print(centroids) # list
+    # print(centroids_arr) # array
 
-    # Start the while loop
+    # # PLOTTING ok.
+    # ax = plt.axes(projection='3d')
+    # for i in centroids:
+    #     ax.plot3D(i[0], i[1], i[2], 'gray')
+    #     ax.scatter3D(i[0], i[1], i[2], cmap='Greens')
+    # plt.show()
+
+    # print("len(df.index): ",len(df.index))
+    # print(df.index) # start=0, stop=..., step=1
+
+    # add all the rows of dataframe to an array where every row of the dataframe is a row in the array
+    points_arr = df.to_numpy()
+    # # check if the 500 objects are there
+    # print(len(points_arr))
+    # print("type:",type(points_arr))
+
     n_iter = 0
     while n_iter < 60:
+        print("n_iter: ", n_iter)
         n_iter +=1
-
-        # lists that hold the number of the objects that belong to them
+        # Initialize one list for every cluster
         cl_0 = []
         cl_1 = []
         cl_2 = []
         cl_3 = []
         cl_4 = []
 
-        # STEP 2: assign each object to a cluster
+        # STEP 2: assign to the object ... the index of the closest centroid
         distance = 0
-        for i in range(len(points_arr)):
-            dists_list = [] # save the k distances to the k clusters to this list
-            for j in range(len(centroids_arr)): # traverse each of the k centroid vectors
-                for c in range(cols): # calculate the distance between the corresponding cols
+        for i in range(len(points_arr)): # fow all the rows of the dataframe
+            dists_list = []
+            for j in range(len(centroids_arr)):
+                for c in range(cols): # it will gradually add all the squares of the cols
                     distance = distance + (points_arr[i][c] - centroids_arr[j][c])**2
+                # when the loop of cols finishes, it's time to take the sqrt of the distance
+                # because it calculated the distances between all the corresponding features vectors
                 distance = math.sqrt(distance)
-                # add the calculated distance to the dists_list.
+                ## add this distance to the list of distances --> there are gonna be as many distances as the number of clusters j
                 dists_list.append(distance)
-            # find the index of the minimun distance
+            # then, we return to calculate the distance of the first object to the next cluster-centroid
+            # if the next distance calculation is easier, we take the bigger
+            # or alternatively we add the k distances to a list and we retrieve the index of the bigger element
             min_value = min(dists_list)
             min_index = dists_list.index(min_value)
+            # print("dists_list: ", dists_list)
+            # print("min_index: ", min_index)
 
-            # add the objects to the correct list based on the returned index (min_index)
+            # take the object's index (i) and save it into a list that holds similar objects
             if min_index == 0:
                 cl_0.append(i)
             if min_index == 1:
@@ -124,39 +153,42 @@ def k_means(features_df):
             if min_index == 4:
                 cl_4.append(i)
 
+        # printing-statements to check if the objects are correctly saved into the list of clusters
+        # print(cl_0)
+        # print(df.iloc[cl_0])
+
+        # use these lists that hold each cluster to retrieve the correct rows from the dataframe
         clusters_objects = [] # a list of dataframes
-        # save the objects of the same cluster as one dataframe in the list of dataframes called clusters_objects
+        # add to the above lists the dataframes
         clusters_objects.append(df.iloc[cl_0])
         clusters_objects.append(df.iloc[cl_1])
         clusters_objects.append(df.iloc[cl_2])
         clusters_objects.append(df.iloc[cl_3])
         clusters_objects.append(df.iloc[cl_4])
 
-        # STEP 3: Calculate the current centroids and update the value of centroids_arr
-        # save the previous centroids in a variable for comparison
-
-        # DEBUGGING:
-        if len(centroids_arr) < 5:
-            # print("current_centr: ", centroids_arr)
-            # print(n_iter)
-            print("something went wrong")
-            break
-
+        # STEP 3: Calculate the current centroids
+        # save the previous centroid
         prev_centroids_arr = centroids_arr
         cur_centroids_arr = []
-        l = 0
-        for n in clusters_objects:
-            # within every cluster, calculate the mean centroid and append to the cur_centroids_arr
+        l = 0 # iterator to traverse the previous_centroids_array
+        for n in clusters_objects: # within every cluster
+            print("l: ", l)
+            # Average of each column using DataFrame.mean()
             cur_centroid_arr = n.mean(axis=0).to_numpy()
+            # save the new centroid to an array which holds all the centroids
             cur_centroids_arr.append((cur_centroid_arr))
             dist = np.sqrt(np.sum(np.square(prev_centroids_arr[l] - cur_centroid_arr)))
-            l += 1
-            if dist < 0.00000001:
-                break
+            print("prev_centroids_arr[l]: ", prev_centroids_arr[l])
+            print("cur_centroids_arr: ", cur_centroids_arr)
+            print("dist: ", dist)
+            print("")
+            # after every iteration, increase the iterator l by one step
+            l+=1
+            # Now check the difference between the previous and the current centroids
+            # if dist < 0.00000001:
+            #     break
 
-        # print("current_centr: ", cur_centroids_arr)
-        # print("previous_centr: ", prev_centroids_arr)
-
+        # save the current centroids array to the variable centroids_arr and reinitialize the while loop
         centroids_arr = cur_centroids_arr
 
 
