@@ -88,7 +88,7 @@ def k_means(features_df):
 
     # Start the while loop
     n_iter = 0
-    while n_iter < 60:
+    while n_iter < 100:
         n_iter +=1
 
         # lists that hold the number of the objects that belong to them
@@ -134,78 +134,28 @@ def k_means(features_df):
 
         # STEP 3: Calculate the current centroids and update the value of centroids_arr
         # save the previous centroids in a variable for comparison
-
-        # DEBUGGING:
-        if len(centroids_arr) < 5:
-            # print("current_centr: ", centroids_arr)
-            # print(n_iter)
-            print("something went wrong")
-            break
-
         prev_centroids_arr = centroids_arr
         cur_centroids_arr = []
+        dists = []
         l = 0
         for n in clusters_objects:
             # within every cluster, calculate the mean centroid and append to the cur_centroids_arr
             cur_centroid_arr = n.mean(axis=0).to_numpy()
             cur_centroids_arr.append((cur_centroid_arr))
             dist = np.sqrt(np.sum(np.square(prev_centroids_arr[l] - cur_centroid_arr)))
+            dists.append(dist)
             l += 1
-            if dist < 0.00000001:
-                break
-
-        # print("current_centr: ", cur_centroids_arr)
-        # print("previous_centr: ", prev_centroids_arr)
-
+        # check if all distances are
+        if all(d < 0.00000001 for d in dists):
+            print("Convergence achieved in iteration", n_iter)
+            break
+        # update the centroids
         centroids_arr = cur_centroids_arr
 
+    # after exiting the while loop
+    return(clusters_objects)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# call k_means function
+# - - - - - - - - - - - - - - - - - - Call the clustering_algorithms - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - call K-means - - - - - -
 k_means(df)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
