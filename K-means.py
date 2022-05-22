@@ -11,6 +11,8 @@ from mpl_toolkits import mplot3d
 import os
 import csv
 
+### ----------------------------------------- Load the data ----------------------------------------- 
+
 files = os.listdir("C:/Users/Panagiotior/Desktop/Q3/MachineLearning/hw/GEO5017-A1-Clustering/scene_objects/scene_objects/data2")
 path = "C:/Users/Panagiotior/Desktop/Q3/MachineLearning/hw/GEO5017-A1-Clustering/scene_objects/scene_objects/data2/"
 
@@ -36,7 +38,7 @@ for file in files:
             label = 'FALSE'
 
         # read the table and assign x,y,z to the corresponding columns
-        df_xyz = pd.read_table(path + file, delimiter=' ')
+        df_xyz = pd.read_table(path + file, delimiter=' ', header=None)
         df_xyz.columns = ["x", "y", "z"]
         # 1) assign the label in the label col, 2) save the base_name as integer in the bname col
         df_xyz.loc[:,'bname'] = iname
@@ -46,10 +48,15 @@ for file in files:
         df = pd.concat([df, df_xyz], sort=False, ignore_index=True)
 
 # print the dataframe and columns=index
-# print(df)
+print(df)
 # print(df.columns)
 
-### - - - - - - - - - - - - - - - - - - - - K-means clustering algorithm - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### ---------------------------------------------- Calculate the Features -------------------------------------
+
+
+
+
+### -------------------------------------------- K-means clustering algorithm -------------------------------------
 
 def k_means(features_df):
     k = 5
@@ -145,7 +152,7 @@ def k_means(features_df):
             dist = np.sqrt(np.sum(np.square(prev_centroids_arr[l] - cur_centroid_arr)))
             dists.append(dist)
             l += 1
-        # check if all distances are
+        # check if all centroids converged
         if all(d < 0.00000001 for d in dists):
             print("Convergence achieved in iteration", n_iter)
             break
@@ -156,6 +163,8 @@ def k_means(features_df):
     return(clusters_objects)
 
 
-# - - - - - - - - - - - - - - - - - - Call the clustering_algorithms - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - call K-means - - - - - -
+### -------------------------------- Call the clustering_algorithms --------------------------------
+
+## ------call K-means------
 k_means(df)
+
