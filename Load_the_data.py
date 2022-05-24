@@ -45,3 +45,12 @@ def load_the_data():
     # print(df)
     # print(df.columns)
     return df
+
+def load_half_the_data(df):
+    df = load_the_data()
+    selected_columns = df[["x", "y", "z"]]
+    df = selected_columns.copy()
+    df = df.astype(float)
+    dt = selected_columns.copy().astype(float).to_numpy()  # it is an array
+    # print(dt)
+    return dt

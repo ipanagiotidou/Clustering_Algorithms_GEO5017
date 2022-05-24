@@ -17,6 +17,7 @@ from sklearn.decomposition import PCA
 # TODO: DBSCAN algorithm
 # TODO: chose the epsilon (ε) parameter
 # TODO: Choose the minimum points (MinPts) parameter
+# TODO: BE VERY CAREFUL: THE KDTREE RETURNS ITSELFT AS WELL.
 
 def n_indices(pt, kdtree, epsilon):
     ns_indices = kdtree.query_ball_point(pt, r=epsilon, p=2.0, workers=1, return_sorted=None, return_length=False)
