@@ -52,7 +52,13 @@ def new_cluster(matrix):
 def distance_samples(s1, s2, matrix):
     dist = matrix[s1][s2]
     if dist == 10 ** 2: # change
-        return # None
+        # change the order of the el1, el2 to find the distance and assign the new values to el1 = el2
+        dist = matrix[s2][s1]
+        # temp = s1
+        # s1 = s2
+        # s2 = temp
+        row = [s2, s1, dist]
+        return row
     else:
         row = [s1, s2, dist]
     return row
@@ -63,7 +69,13 @@ def distance_clusters(cluster1, cluster2, matrix):
         for el2 in cluster1:
             dist = matrix[el1][el2]
             if dist == 10 ** 2:  # change
-                return # None
+                # change the order of the el1, el2 to find the distance and assign the new values to el1 = el2
+                dist = matrix[el2][el1]
+                # temp = el1
+                # el1 = el2
+                # el2 = temp
+                el_val_dist_list.append([el2, el1, dist])
+                return el_val_dist_list
             else:
                 el_val_dist_list.append([el1, el2, dist])
     return el_val_dist_list
@@ -75,7 +87,13 @@ def distance_sample_cluster(cluster, value, matrix):
     for el in cluster:  # first time will be el = 0 and then el = 1
         dist = matrix[el][value] # row = el, col = val # first time matrix[0][2] -> 5, matrix[1][2] -> 3
         if dist == 10**2: # change
-            return None
+            # change the order of the el1, el2 to find the distance and assign the new values to el1 = el2
+            dist = matrix[value][el]
+            # temp = el
+            # el = value
+            # value = temp
+            el_val_dist_list.append([value, el, dist])
+            return el_val_dist_list
         else:
             el_val_dist_list.append([el, value, dist]) # [0, 2, 5], [1, 2, 3]
     return el_val_dist_list
@@ -85,7 +103,8 @@ def distance_sample_cluster(cluster, value, matrix):
 def hierarchical(number_of_clusters):
     m = number_of_clusters
     # create data
-    X = np.array([[1,6], [1,4], [1,1], [5,1]])
+    # X = np.array([[1,6], [1,4], [1,1], [5,1]])
+    X = np.array([[0.4, 0.53], [0.22, 0.38], [0.35, 0.32], [0.26, 0.19], [0.08, 0.41], [0.45 ,0.30]])
     # calculate the distance matrix
     matrix = compute_matrix(X)
     # print(matrix)
@@ -93,7 +112,7 @@ def hierarchical(number_of_clusters):
     clusters = {}
     for i in range(len(X)):
         clusters[str(i)]=[i]
-    # print(clusters) # {'0': [0], '1': [1], '2': [2], '3': [3]}
+    print(clusters) # {'0': [0], '1': [1], '2': [2], '3': [3]}
 
     key1, key2 = new_cluster(matrix) # every time should get back 2 keys
     print("key1: ", key1, type(key1))
@@ -111,12 +130,13 @@ def hierarchical(number_of_clusters):
         el_clusters_list = []
         el_val_dist_list_1 = []
         el_val_dist_list_2 = []
+        # print("clusters.values(): " , clusters.values())
         for val1 in clusters.values(): # dict_values([[0, 1], [2], [3]])
-            # print("val1: ", val1)
+            print("val1: ", val1)
             for val2 in clusters.values():
 
                 if val1 != val2:
-                    # print("val2: ", val2)
+                    print("val2: ", val2)
                     # print(type(val2))
 
                     # 4 CASES: two of them are the same
@@ -129,7 +149,10 @@ def hierarchical(number_of_clusters):
                         if el_clusters_list == None:
                             pass  # not sure it should be a pass or continue
                         else:
-                            list_all_el_val_dists.extend(el_clusters_list)
+                            for element in el_clusters_list:
+                                print("element:", element)
+                                list_all_el_val_dists.append(element) if element not in list_all_el_val_dists else list_all_el_val_dists
+                            #list_all_el_val_dists.extend(el_clusters_list) if el_clusters_list not in list_all_el_val_dists else list_all_el_val_dists
 
 
                     # Case 2: one sample (val1) and one cluster/list (val2)
@@ -139,11 +162,14 @@ def hierarchical(number_of_clusters):
                             print("case2")
                             # print("val2: ", val2)
                             # call the distance_sample_cluster
-                            el_val_dist_list_1 = distance_sample_cluster(val1, val2[0], matrix)
+                            el_val_dist_list_1 = distance_sample_cluster(val2, val1[0], matrix)
                             if el_val_dist_list_1 == None:
                                 pass
                             else:
-                                list_all_el_val_dists.extend(el_val_dist_list_1)
+                                for element in el_val_dist_list_1:
+                                    print("element:", element)
+                                    list_all_el_val_dists.append(element) if element not in list_all_el_val_dists else list_all_el_val_dists
+                                #list_all_el_val_dists.extend(el_val_dist_list_1) if el_val_dist_list_1 not in list_all_el_val_dists else list_all_el_val_dists
                             print(el_val_dist_list_1)
 
 
@@ -156,7 +182,10 @@ def hierarchical(number_of_clusters):
                             if el_val_dist_list_2 == None:
                                 pass
                             else:
-                                list_all_el_val_dists.extend(el_val_dist_list_2)
+                                for element in el_val_dist_list_2:
+                                    print("element:", element)
+                                    list_all_el_val_dists.append(element) if element not in el_val_dist_list_2 else el_val_dist_list_2
+                                # list_all_el_val_dists.extend(el_val_dist_list_2) if el_val_dist_list_2 not in list_all_el_val_dists else list_all_el_val_dists
                             print(el_val_dist_list_2)
 
                     # Case 4: # both samples
@@ -169,7 +198,7 @@ def hierarchical(number_of_clusters):
                         if row == None:
                             pass
                         else:
-                            list_all_el_val_dists.append(row)
+                            list_all_el_val_dists.append(row) if row not in list_all_el_val_dists else list_all_el_val_dists
                         print(row)
 
         dt = pd.DataFrame(list_all_el_val_dists)
