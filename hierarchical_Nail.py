@@ -14,12 +14,13 @@ import Load_the_data
 
 # check the algorithms
 from sklearn import datasets
+from sklearn.decomposition import PCA
 
 ### -------------------------------------------- HIERARCHICAL clustering algorithm -------------------------------------
 # TODO: Hierarchical algorithm
 # TODO: Change 10**2 value
 
-n = 10**3
+n = 10**2
 
 def compute_matrix(my_data):
     my_data = np.array(my_data)
@@ -31,13 +32,13 @@ def compute_matrix(my_data):
         for j in range(l):
             if i!=j:
                 # Manhatan distance --> Replace with Euclidean
-                matrix[i][j] = sum(abs(val1-val2) for val1, val2 in zip(my_data[i],my_data[j]))
-                matrix[j][i] = matrix[i][j]
+                # matrix[i][j] = sum(abs(val1-val2) for val1, val2 in zip(my_data[i],my_data[j]))
+                # matrix[j][i] = matrix[i][j]
 
                 # # Euclidean distance
-                # val1 = my_data[i]
-                # val2 = my_data[j]
-                # matrix[i][j] = round(np.linalg.norm(val1-val2), 3) # for val1, val2 in zip(my_data[i],my_data[j]))
+                val1 = my_data[i]
+                val2 = my_data[j]
+                matrix[i][j] = round(np.linalg.norm(val1-val2), 2) # for val1, val2 in zip(my_data[i],my_data[j]))
             else:
                 matrix[i][j] = n # in the diagonal
     return matrix # matrix_a
@@ -79,9 +80,9 @@ def hierarchical_nail(number_of_clusters):
 
     # DATA
     m = number_of_clusters
-    iris_data = datasets.load_iris()
-    X = iris_data.data
-    # X = np.array([[0.4, 0.53], [0.22, 0.38], [0.35, 0.32], [0.26, 0.19], [0.08, 0.41], [0.45 ,0.30]])
+    # iris_data = datasets.load_iris()
+    # X = iris_data.data
+    X = np.array([[0.4, 0.53], [0.22, 0.38], [0.35, 0.32], [0.26, 0.19], [0.08, 0.41], [0.45 ,0.30]])
     #X = np.array([[1,6],[1,4],[1,1],[5,1]])
 
     # MATRIX
@@ -147,11 +148,31 @@ def hierarchical_nail(number_of_clusters):
         # remove one cluster from the list
         l = l - 1
 
+    # list_clusters = []
+    # list_cluster_1 = []
+    # list_cluster_1.append(clusters['0'])
+    #
+    # list_cluster_2 = []
+    # list_cluster_1.append(clusters['100'])
+    # print("list-1: ", list_cluster_1)
+    # print("list_clusters: ", list_cluster_1)
+    # list_clusters.append(list_cluster_1)
+    # list_clusters.append(list_cluster_2)
+
+
 
     return clusters
 
 
 # call the hierarchical
 #
-print(hierarchical_nail(2))
-
+# print(hierarchical_nail(2))
+# iris_data = datasets.load_iris()
+# X = iris_data.data
+clustering = hierarchical_nail(2)
+#
+# pca = PCA(n_components=2)
+# X_transformed = pca.fit_transform(X)
+# plt.scatter(X_transformed[:, 0], X_transformed[:, 1], c=clustering)
+# plt.show()
+# print(clustering)
