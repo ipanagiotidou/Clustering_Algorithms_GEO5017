@@ -26,6 +26,12 @@ def compute_matrix(my_data):
                 # Manhatan distance --> Replace with Euclidean
                 matrix[i][j] = sum(abs(val1-val2) for val1, val2 in zip(my_data[i],my_data[j]))
                 matrix[j][i] = matrix[i][j]
+
+                # # Euclidean distance
+                # val1 = my_data[i]
+                # val2 = my_data[j]
+                # matrix[i][j] = np.linalg.norm(val1-val2)
+
             else:
                 matrix[i][j] = n # change
     print(matrix)
@@ -76,11 +82,12 @@ def distance_sample_cluster(cluster, value, matrix):
 
 
 
-def hierarchical(number_of_clusters):
+def hierarchical(data, number_of_clusters):
+    X = data
     m = number_of_clusters
     # create data
     #X = np.array([[1,6], [1,4], [1,1], [5,1]])
-    X = np.array([[0.4, 0.53], [0.22, 0.38], [0.35, 0.32], [0.26, 0.19], [0.08, 0.41], [0.45 ,0.30]])
+    # X = np.array([[0.4, 0.53], [0.22, 0.38], [0.35, 0.32], [0.26, 0.19], [0.08, 0.41], [0.45 ,0.30]])
     # calculate the distance matrix
     matrix = compute_matrix(X)
 
@@ -107,11 +114,11 @@ def hierarchical(number_of_clusters):
         el_val_dist_list_2 = []
         # print("clusters.values(): " , clusters.values())
         for val1 in clusters.values(): # dict_values([[0, 1], [2], [3]])
-            print("val1: ", val1)  # [0, 1]
+            #print("val1: ", val1)  # [0, 1]
             for val2 in clusters.values():
 
                 if val1 != val2:
-                    print("val2: ", val2) # [2] και μετά [3]
+                    #print("val2: ", val2) # [2] και μετά [3]
                     # print(type(val2))
 
                     # 4 CASES: two of them are the same
@@ -119,7 +126,7 @@ def hierarchical(number_of_clusters):
                     # Case 1: both clusters/lists
                     if len(val1) > 1 and len(val2) > 1:
                         # call
-                        print("case1")
+                        #print("case1")
                         el_clusters_list = distance_clusters(val1, val2, matrix)
                         if el_clusters_list == None:
                             pass  # not sure it should be a pass or continue
@@ -134,7 +141,7 @@ def hierarchical(number_of_clusters):
                     if not len(val1) > 1:
                         # print("length val1: ", val1)
                         if len(val2) > 1:
-                            print("case2")
+                            #print("case2")
                             # print("val2: ", val2)
                             # call the distance_sample_cluster
                             el_val_dist_list_1 = distance_sample_cluster(val2, val1[0], matrix)
@@ -151,7 +158,7 @@ def hierarchical(number_of_clusters):
                     # Case 3: # one cluster/list (val1) and one value/sample (val2)
                     if not len(val2) > 1:
                         if len(val1) > 1:
-                            print("case3")
+                            #print("case3")
                             # call the distance_sample_cluster
                             el_val_dist_list_2 = distance_sample_cluster(val1, val2[0], matrix)
                             if el_val_dist_list_2 == None:
@@ -166,7 +173,7 @@ def hierarchical(number_of_clusters):
                     # Case 4: # both samples
                     if not len(val1) > 1 and not len(val2) > 1: # μήπως έχει σημασία ποιο είναι μικρότερο ή μεγαλύτερο κάποια στιγμή;
                         # call the simple distance_function
-                        print("case4")
+                        #print("case4")
                         # print("val1:", val1)
                         # print("val2:", val2)
                         row = distance_samples(val1[0], val2[0], matrix)
@@ -178,20 +185,20 @@ def hierarchical(number_of_clusters):
 
         dt = pd.DataFrame(list_all_el_val_dists)
         # # print("list_all_el_val_dists: ", list_all_el_val_dists)
-        print(dt)
+        #print(dt)
 
         # get the row index position of min value in column 2(where I keep the distances)
         minValueRowIndexObj = dt[2].idxmin()
-        print("min values of columns are at row index position :")
-        print(minValueRowIndexObj)
+        #print("min values of columns are at row index position :")
+        #print(minValueRowIndexObj)
         # supposedly I have found the two keys for which I should delete the one and search for the other
         # retrieve from dt the two keys
         dt = dt.to_numpy()
         key__ = dt[minValueRowIndexObj][0]
 
         key_ = dt[minValueRowIndexObj][1]
-        print("key__:", key__)
-        print("key_:", key_)
+        #print("key__:", key__)
+        #print("key_:", key_)
         if key__ < key_ :
             key_1 = str(int(key__))
             key_2 = str(int(key_))
@@ -214,16 +221,21 @@ def hierarchical(number_of_clusters):
         # key_2 = str(dt[minValueRowIndexObj][1]) # the value I want to import, which is the row index
         # print("key_2: ", key_2, type(key_2))
         # # do the magic
+
+        print("keys: ",  key_1, key_2)
         clusters[key_1] = clusters[key_1] + clusters[key_2]
         del clusters[key_2]
 
         print("clusters: ", clusters)
 
 
+
+
         l = l - 1
+    print("clusters: ", clusters)
     return clusters
 
 
 # call the hierarchical
-print(hierarchical(2))
+# print(hierarchical(2))
 
