@@ -15,28 +15,21 @@ import Load_the_data
 ### -------------------------------------------- HIERARCHICAL clustering algorithm -------------------------------------
 # TODO: Hierarchical algorithm
 # TODO: Change 10**2 value
-
+n = 10**2
 def compute_matrix(my_data):
     # create the REFERENCE MATRIX
     l = len(my_data)
     matrix = np.zeros(shape=(l,l))
-    matrix_b = np.zeros(matrix.shape)
-    # fill the matrix
     for i in range(l):
         for j in range(l):
             if i!=j:
-                if i > j:
-                    matrix[i][j] = 10**2 # change
-                else:
-                    # Manhatan distance --> Replace with Euclidean
-                    matrix[i][j] = sum(abs(val1-val2) for val1, val2 in zip(my_data[i],my_data[j]))
+                # Manhatan distance --> Replace with Euclidean
+                matrix[i][j] = sum(abs(val1-val2) for val1, val2 in zip(my_data[i],my_data[j]))
+                matrix[j][i] = matrix[i][j]
             else:
-                matrix[i][j] = 10**2 # change
-
-    #matrix_b = np.triu(matrix)
-    #print("matrix_b: ", matrix_b)
+                matrix[i][j] = n # change
     print(matrix)
-    return matrix # matrix_a
+    return matrix
 
 # this function computes the distances and returns the clusters in a list. [[], []]
 def new_cluster(matrix):
@@ -46,17 +39,14 @@ def new_cluster(matrix):
     print(indices)
     clusters.append(str(indices[0][0]))
     clusters.append(str(indices[1][0]))
-    # remove the two clusters from the previous cluster
+    # IS it of any value to change the order to descending ?
+    # ... ... ... ... ... ... ... ... ...
     return clusters[0], clusters[1]
 
 def distance_samples(s1, s2, matrix):
     dist = matrix[s1][s2]
-    if dist == 10 ** 2: # change
-        # change the order of the el1, el2 to find the distance and assign the new values to el1 = el2
+    if dist == n: # change
         dist = matrix[s2][s1]
-        # temp = s1
-        # s1 = s2
-        # s2 = temp
         row = [s2, s1, dist]
         return row
     else:
@@ -68,12 +58,8 @@ def distance_clusters(cluster1, cluster2, matrix):
     for el1 in cluster1:
         for el2 in cluster1:
             dist = matrix[el1][el2]
-            if dist == 10 ** 2:  # change
-                # change the order of the el1, el2 to find the distance and assign the new values to el1 = el2
+            if dist == n:
                 dist = matrix[el2][el1]
-                # temp = el1
-                # el1 = el2
-                # el2 = temp
                 el_val_dist_list.append([el2, el1, dist])
                 return el_val_dist_list
             else:
@@ -83,19 +69,9 @@ def distance_clusters(cluster1, cluster2, matrix):
 def distance_sample_cluster(cluster, value, matrix):
     # it should return [el, val, dist]
     el_val_dist_list = []
-    print(list)
     for el in cluster:  # first time will be el = 0 and then el = 1
         dist = matrix[el][value] # row = el, col = val # first time matrix[0][2] -> 5, matrix[1][2] -> 3
-        if dist == 10**2: # change
-            # change the order of the el1, el2 to find the distance and assign the new values to el1 = el2
-            dist = matrix[value][el]
-            # temp = el
-            # el = value
-            # value = temp
-            el_val_dist_list.append([value, el, dist])
-            return el_val_dist_list
-        else:
-            el_val_dist_list.append([el, value, dist]) # [0, 2, 5], [1, 2, 3]
+        el_val_dist_list.append([el, value, dist]) # [0, 2, 5], [1, 2, 3]
     return el_val_dist_list
 
 
@@ -103,11 +79,10 @@ def distance_sample_cluster(cluster, value, matrix):
 def hierarchical(number_of_clusters):
     m = number_of_clusters
     # create data
-    # X = np.array([[1,6], [1,4], [1,1], [5,1]])
+    #X = np.array([[1,6], [1,4], [1,1], [5,1]])
     X = np.array([[0.4, 0.53], [0.22, 0.38], [0.35, 0.32], [0.26, 0.19], [0.08, 0.41], [0.45 ,0.30]])
     # calculate the distance matrix
     matrix = compute_matrix(X)
-    # print(matrix)
 
     clusters = {}
     for i in range(len(X)):
@@ -119,7 +94,7 @@ def hierarchical(number_of_clusters):
     print("key2: ", key2, type(key2))
     clusters[key1] = clusters[key1] + clusters[key2]
     del clusters[key2]
-    # print(clusters) # {'0': [0, 1], '2': [2], '3': [3]}
+    print(clusters) # {'0': [0, 1], '2': [2], '3': [3]}
     l = len(clusters)
 
     while l > m:
@@ -132,11 +107,11 @@ def hierarchical(number_of_clusters):
         el_val_dist_list_2 = []
         # print("clusters.values(): " , clusters.values())
         for val1 in clusters.values(): # dict_values([[0, 1], [2], [3]])
-            print("val1: ", val1)
+            print("val1: ", val1)  # [0, 1]
             for val2 in clusters.values():
 
                 if val1 != val2:
-                    print("val2: ", val2)
+                    print("val2: ", val2) # [2] και μετά [3]
                     # print(type(val2))
 
                     # 4 CASES: two of them are the same
@@ -150,7 +125,7 @@ def hierarchical(number_of_clusters):
                             pass  # not sure it should be a pass or continue
                         else:
                             for element in el_clusters_list:
-                                print("element:", element)
+                                #print("element:", element)
                                 list_all_el_val_dists.append(element) if element not in list_all_el_val_dists else list_all_el_val_dists
                             #list_all_el_val_dists.extend(el_clusters_list) if el_clusters_list not in list_all_el_val_dists else list_all_el_val_dists
 
@@ -167,10 +142,10 @@ def hierarchical(number_of_clusters):
                                 pass
                             else:
                                 for element in el_val_dist_list_1:
-                                    print("element:", element)
+                                    #print("element:", element)
                                     list_all_el_val_dists.append(element) if element not in list_all_el_val_dists else list_all_el_val_dists
                                 #list_all_el_val_dists.extend(el_val_dist_list_1) if el_val_dist_list_1 not in list_all_el_val_dists else list_all_el_val_dists
-                            print(el_val_dist_list_1)
+                            #print(el_val_dist_list_1)
 
 
                     # Case 3: # one cluster/list (val1) and one value/sample (val2)
@@ -183,10 +158,10 @@ def hierarchical(number_of_clusters):
                                 pass
                             else:
                                 for element in el_val_dist_list_2:
-                                    print("element:", element)
+                                    #print("element:", element)
                                     list_all_el_val_dists.append(element) if element not in el_val_dist_list_2 else el_val_dist_list_2
                                 # list_all_el_val_dists.extend(el_val_dist_list_2) if el_val_dist_list_2 not in list_all_el_val_dists else list_all_el_val_dists
-                            print(el_val_dist_list_2)
+                            #print(el_val_dist_list_2)
 
                     # Case 4: # both samples
                     if not len(val1) > 1 and not len(val2) > 1: # μήπως έχει σημασία ποιο είναι μικρότερο ή μεγαλύτερο κάποια στιγμή;
@@ -199,7 +174,7 @@ def hierarchical(number_of_clusters):
                             pass
                         else:
                             list_all_el_val_dists.append(row) if row not in list_all_el_val_dists else list_all_el_val_dists
-                        print(row)
+                        #print(row)
 
         dt = pd.DataFrame(list_all_el_val_dists)
         # # print("list_all_el_val_dists: ", list_all_el_val_dists)
@@ -209,17 +184,40 @@ def hierarchical(number_of_clusters):
         minValueRowIndexObj = dt[2].idxmin()
         print("min values of columns are at row index position :")
         print(minValueRowIndexObj)
-        # Now, I should find in which key the value is and retrieve the key to use it to replace
-        key = [k for k, v in clusters.items() if minValueRowIndexObj in v] # clusters.items(): dict_items([('0', [0, 1]), ('2', [2]), ('3', [3])])
-        print("keys: ", key) # returns the key in a list, e.g. ['0']
-        # Now I should take this key and replace it with the key-values it had and also the
-        key_1 = key[0]
-        print("key_1: ", key_1, type(key_1))
-        key_2 = str(dt[minValueRowIndexObj][1]) # the value I want to import, which is the row index
-        print("key_2: ", key_2, type(key_2))
-        # do the magic
+        # supposedly I have found the two keys for which I should delete the one and search for the other
+        # retrieve from dt the two keys
+        dt = dt.to_numpy()
+        key__ = dt[minValueRowIndexObj][0]
+
+        key_ = dt[minValueRowIndexObj][1]
+        print("key__:", key__)
+        print("key_:", key_)
+        if key__ < key_ :
+            key_1 = str(int(key__))
+            key_2 = str(int(key_))
+        else:
+            key_1 = str(int(key_))
+            key_2 = str(int(key__))
+
+
+
+
+
+
+
+        # # Now, I should find in which key the value is and retrieve the key to use it to replace
+        # key = [k for k, v in clusters.items() if minValueRowIndexObj in v] # clusters.items(): dict_items([('0', [0, 1]), ('2', [2]), ('3', [3])])
+        # print("keys: ", key) # returns the key in a list, e.g. ['0']
+        # # Now I should take this key and replace it with the key-values it had and also the
+        # key_1 = key[0]
+        # print("key_1: ", key_1, type(key_1))
+        # key_2 = str(dt[minValueRowIndexObj][1]) # the value I want to import, which is the row index
+        # print("key_2: ", key_2, type(key_2))
+        # # do the magic
         clusters[key_1] = clusters[key_1] + clusters[key_2]
         del clusters[key_2]
+
+        print("clusters: ", clusters)
 
 
         l = l - 1

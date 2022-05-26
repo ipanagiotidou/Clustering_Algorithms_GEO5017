@@ -12,11 +12,32 @@ import os
 import csv
 import Load_the_data
 
+# check the algorithms
+from sklearn import datasets
+
 ### -------------------------------------------- HIERARCHICAL clustering algorithm -------------------------------------
 # TODO: Hierarchical algorithm
 # TODO: Change 10**2 value
 
+
+def isDiagonalMatrix(mat):
+    for i in range(0, len(mat)):
+        for j in range(0, len(mat)):
+
+            # condition to check
+            # other elements
+            # except main diagonal
+            # are zero or not.
+            if ((i != j) and
+                    (mat[i][j] != mat[j][i])):
+                return False
+    return True
+
+
+
+
 def compute_matrix(my_data):
+    my_data = np.array(my_data)
     # create the REFERENCE MATRIX
     l = len(my_data)
     matrix = np.zeros(shape=(l,l))
@@ -29,7 +50,10 @@ def compute_matrix(my_data):
                 #     matrix[i][j] = 10**2 # change
                 # else:
                     # Manhatan distance --> Replace with Euclidean
-                matrix[i][j] = sum(abs(val1-val2) for val1, val2 in zip(my_data[i],my_data[j]))
+                # sum(abs(val1-val2) for val1, val2 in zip(my_data[i],my_data[j]))
+                val1 = my_data[i]
+                val2 = my_data[j]
+                matrix[i][j] = round(np.linalg.norm(val1-val2), 3) # for val1, val2 in zip(my_data[i],my_data[j]))
             else:
                 matrix[i][j] = 10**2 # change
 
@@ -40,7 +64,6 @@ def compute_matrix(my_data):
 
 def reformat_matrix(matrix, key1, key2):
     # TODO - question: can it be that key2 > key1 --> the way I return the keys in the function 'new_cluster' ?
-
     key1 = int(key1)
     key2 = int(key2)
     size = matrix.shape[0]-1
@@ -49,25 +72,19 @@ def reformat_matrix(matrix, key1, key2):
     #print("matrix_new: ", matrix_new)
     for i in range(matrix.shape[0]-1):
         if i!=key1:
-            print("i,", i)
+            # print("i,", i)
             matrix_new[i][key1] = min(matrix[i][key1], matrix[i][key2]) # let i be the
-    print("matrix_new:\n ", matrix_new)
-    return matrix_new
+            matrix_new[key1][i] = matrix_new[i][key1]
+            # print("matrix_new[i][key1], matrix[i][key1], matrix[i][key2]: ", matrix_new[i][key1], matrix[i][key1],matrix[i][key2])
+    #print("matrix_new + length :\n ",matrix_new.shape[0], matrix_new.shape[1], matrix_new)
+    print("matrix_new: \n ", matrix_new)
 
-
-def distance_samples(s1, s2, matrix):
-    dist = matrix[s1][s2]
-    if dist == 10 ** 2: # change
-        # change the order of the el1, el2 to find the distance and assign the new values to el1 = el2
-        dist = matrix[s2][s1]
-        # temp = s1
-        # s1 = s2
-        # s2 = temp
-        row = [s2, s1, dist]
-        return row
+    if not isDiagonalMatrix(matrix_new):
+        exit()
     else:
-        row = [s1, s2, dist]
-    return row
+        return matrix_new
+
+
 
 # this function computes the distances and returns the clusters in a list. [[], []]
 def new_cluster(matrix):
@@ -75,50 +92,81 @@ def new_cluster(matrix):
     clusters = []
     # print(matrix)
     indices = np.where(matrix == np.amin(matrix))
-    print("indices:",indices)
+    #print("indices:",indices)
     clusters.append(str(indices[0][0]))
     clusters.append(str(indices[1][0]))
     # remove the two clusters from the previous cluster
-    # if (clusters[0] < clusters[1]):
-    #     return clusters[0], clusters[1]
+    if (clusters[0] < clusters[1]):
+        return clusters[0], clusters[1]
+    else:
+        return clusters[1], clusters[0]
+    # if clusters[0] == clusters[1]:
+    #     print("ELEMENT OF THE DIAGONAL WAS PICKED! --> EXIT")
+    #     exit(666)
     # else:
-    #     return clusters[1], clusters[0]
-    return clusters[0], clusters[1]
+    #     return clusters[0], clusters[1]
 
 
-def hierarchical(number_of_clusters):
+def hierarchical_nail(number_of_clusters):
+
     m = number_of_clusters
-    # create data
-    # X = np.array([[1,6], [1,4], [1,1], [5,1]])
+    #iris_data = datasets.load_iris()
+    #X = iris_data.data
     X = np.array([[0.4, 0.53], [0.22, 0.38], [0.35, 0.32], [0.26, 0.19], [0.08, 0.41], [0.45 ,0.30]])
-    # calculate the distance matrix
-    matrix = compute_matrix(X)
-    # print(matrix)
 
-    clusters = {}
-    for i in range(len(X)):
-        clusters[str(i)]=[i]
-    print(clusters) # {'0': [0], '1': [1], '2': [2], '3': [3], '4': [4], '5': [5]}
+
+
+
+    matrix = compute_matrix(X)
+    print(matrix)
+
+    # Clusters as List
+    clusters = [[i] for i in range(1, len(X)+1)]
+    # print("lenght of clusters: ", len(clusters))
 
     key1, key2 = new_cluster(matrix) # every time should get back 2 keys
-    print("key1: ", key1, type(key1))
-    print("key2: ", key2, type(key2))
+    key1 = int(key1)
+    key2 = int(key2)
+    print_key1 = key1 + 1
+    print_key2 = key2 + 1
+    print("keys: ", print_key1, print_key2)
 
-    clusters[key1] = clusters[key1] + clusters[key2] # {'0': [0], '1': [1], '2': [2,5], '3': [3], '4': [4]}
+    # updating the list cluster
+    if len(clusters[key2]) == 1:
+        clusters[key1].append(clusters[key2][0])
+    else:
+        clusters[key1].extend(clusters[key2])
     del clusters[key2]
     print(clusters)
+
     l = len(clusters)
 
     matrix_new = reformat_matrix(matrix, key1, key2)
 
 
     while l > m:
+        print("in the loop")
         key1, key2 = new_cluster(matrix_new)
-        print("keys: ", key1, key2)
-        clusters[key1] = clusters[key1] + clusters[key2]
+        key1 = int(key1)
+        key2 = int(key2)
+        print_key1 = key1+ 1
+        print_key2 = key2 + 1
+        print("keys: ", print_key1, print_key2)
+
+        # updating the list cluster
+        if len(clusters[key2]) == 1:
+            clusters[key1].append(clusters[key2][0])
+        else:
+            clusters[key1].extend(clusters[key2])
         del clusters[key2]
+
+        # print clusters
         print("clusters: ", clusters)
+
+        # update the matrix
         matrix_new = reformat_matrix(matrix_new, key1, key2)
+
+        # remove one cluster from the list
         l = l - 1
 
 
@@ -126,5 +174,6 @@ def hierarchical(number_of_clusters):
 
 
 # call the hierarchical
-print(hierarchical(2))
+#
+print(hierarchical_nail(2))
 
