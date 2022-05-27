@@ -18,129 +18,130 @@ from sklearn.decomposition import PCA
 
 ### -------------------------------------------- HIERARCHICAL clustering algorithm -------------------------------------
 # TODO: Hierarchical algorithm
-# TODO: Change 10**2 value
+# TODO: read the comments. delete unnecessary
 
+
+# TODO: MAKE SURE THIS VALUE WORKS FOR YOUR DATASET  --> --> --> --> Change 10**2 value
 n = 10**2
 
 def compute_matrix(my_data):
+    # turn the data into an array
     my_data = np.array(my_data)
-    l = len(my_data)
+    l = len(my_data) # save the length of my_data
 
+    # initialize an empty 2D matrix to hold the distances between the objects in the size of our data (rows and columns)
     matrix = np.zeros(shape=(l,l))
+
     # fill the matrix
     for i in range(l):
         for j in range(l):
-            if i!=j:
+
+            if i!=j: # calculate distances only between different objects (not in the diagonal)
+                # TODO: to be deleted if not used --> MANHATAN distance
                 # Manhatan distance --> Replace with Euclidean
                 # matrix[i][j] = sum(abs(val1-val2) for val1, val2 in zip(my_data[i],my_data[j]))
                 # matrix[j][i] = matrix[i][j]
+                # TODO: delete the above if not used.
 
-                # # Euclidean distance
+                # We calculate the Euclidean distance between the feature vectors of the objects
                 val1 = my_data[i]
                 val2 = my_data[j]
-                matrix[i][j] = round(np.linalg.norm(val1-val2), 2) # for val1, val2 in zip(my_data[i],my_data[j]))
+                matrix[i][j] = round(np.linalg.norm(val1-val2), 2)
+
             else:
-                matrix[i][j] = n # in the diagonal
-    return matrix # matrix_a
+                matrix[i][j] = n   # assign a big value in the diagonal elements so that we never get them back as the minimum value
 
-
-# this function computes the distances and returns the clusters in a list. [[], []]
-def new_cluster(matrix):
-    # function that takes a matrix and chooses which two clusters will form a new cluster
-    clusters = []
-    # print(matrix)
-    indices = np.where(matrix == np.amin(matrix))
-    #print("indices:",indices)
-    clusters.append(str(indices[0][0]))
-    clusters.append(str(indices[1][0]))
-    # remove the two clusters from the previous cluster
-    if (clusters[0] < clusters[1]):
-        return clusters[0], clusters[1]
-    else:
-        return clusters[1], clusters[0]
-
-
-def reformat_matrix(matrix, key1, key2):
-    # TODO - question: can it be that key2 > key1 --> the way I return the keys in the function 'new_cluster' ?
-    key1 = int(key1)
-    key2 = int(key2)
-
-    for i in range(matrix.shape[0]):
-        if i!=key1 or i!=key2:
-            matrix[i][key1] = min(matrix[i][key1], matrix[i][key2]) # let i be the
-            matrix[key1][i] = matrix[i][key1]
-        matrix[i][key2] = n
-        matrix[key2][i] = n
-    np.fill_diagonal(matrix, n)
-    print("matrix_new: \n ", matrix)
     return matrix
 
 
-def hierarchical_nail(number_of_clusters):
+def new_cluster(matrix):
+    '''
+    The function takes a matrix and returns the row and column (indices) where it found the minimum value.
+    These indices indicate the objects that should be grouped in the same cluster.
+    Returns the indices in ascending order, in string format since I will use them as keys to retrieve values from a dictionary.
+    '''
+    c = []
 
-    # DATA
+    indices = np.where(matrix == np.amin(matrix))
+    c.append(str(indices[0][0]))
+    c.append(str(indices[1][0]))
+
+    if (c[0] < c[1]):
+        return str(int(c[0])), str(int(c[1]))
+    else:
+        return str(int(c[1])), str(int(c[0]))
+
+
+def reformat_matrix(matrix, key1, key2):
+    '''
+    The function takes as parameters the matrix and two indices.
+    These two indices correspond to the objects that should be grouped into the same cluster.
+
+    We reformat the Matrix of distances keeping the smallest distance between the objects and the new cluster.
+    So, for example, if we have to group objects 2 and 5, we will reassign distance values to all the rest of the objects as:
+    d(0,2) = min ( d(0,2), d(0,5) ).
+    Finally, in the row and column of the matrix belonging to object 5 we will assign a very large value
+     so that it will never be given back as the smallest distance. Meaning...we will never be forced to group it to a cluster!
+    '''
+
+    # turn the keys of the dictionary from string to integers to use them for indexing.
+    key1 = int(key1)
+    key2 = int(key2)
+    for i in range(matrix.shape[0]): # loop by using the row dimension of the matrix
+        if i!=key1 or i!=key2: # don't do the below in the rows and cols of the objects that are grouped together
+            matrix[i][key1] = min(matrix[i][key1], matrix[i][key2])
+            matrix[key1][i] = matrix[i][key1] # do the opposite because the matrix is symmetric
+
+        # assign a very big number to the rows and cols of the second object (key2)
+        matrix[i][key2] = n
+        matrix[key2][i] = n
+    # fill the diagonal again with big values
+    np.fill_diagonal(matrix, n)
+
+    # print("matrix_new: \n ", matrix)
+    return matrix
+
+
+def hierarchical_nail(dataset, number_of_clusters):
+
+    # assign the desired number of clusters into variable m
     m = number_of_clusters
-    # iris_data = datasets.load_iris()
-    # X = iris_data.data
-    X = np.array([[0.4, 0.53], [0.22, 0.38], [0.35, 0.32], [0.26, 0.19], [0.08, 0.41], [0.45 ,0.30]])
-    #X = np.array([[1,6],[1,4],[1,1],[5,1]])
+
+    # assign the dataset to variable X
+    X = dataset
 
     # MATRIX
+    # call function that computes the initial matrix --> distances between all objects
     matrix = compute_matrix(X)
-    print(matrix)
 
-    # # Clusters as List
-    # clusters = [[i] for i in range(1, len(X)+1)]
-    # # print("lenght of clusters: ", len(clusters))
-
-    # CLUSTERS
-    clusters = {}
+    # CLUSTERS:
+    # Initialize a dictionary with one key-value pair for every object
+    clusters = {}                  # e.g. {'0': [0], '1': [1], '2': [2], '3': [3]}
     for i in range(len(X)):
         clusters[str(i)]=[i]
-    print(clusters) # {'0': [0], '1': [1], '2': [2], '3': [3]}
+    # print(clusters)
 
-    # KEYS
-    key1, key2 = new_cluster(matrix) # every time should get back 2 keys
-    key1 = str(int(key1))
-    key2 = str(int(key2))
-    print("keys: ", key1, key2)
+    # KEYS:
+    # call the function that returns the indices of row and column with the minimum value(distance) in the matrix
+    key1, key2 = new_cluster(matrix)
+    # print("keys: ", key1, key2)
 
     clusters[key1] = clusters[key1] + clusters[key2]
     del clusters[key2]
-
-
-    # # updating the list cluster
-    # if len(clusters[key2]) == 1:
-    #     clusters[key1].append(clusters[key2][0])
-    # else:
-    #     clusters[key1].extend(clusters[key2])
-    # del clusters[key2]
-    # print(clusters)
 
     l = len(clusters)
 
     matrix_new = reformat_matrix(matrix, key1, key2)
 
-
     while l > m:
-        print("in the loop")
         key1, key2 = new_cluster(matrix_new)
-        key1 = str(int(key1))
-        key2 = str(int(key2))
-        print("keys: ", key1, key2)
-
-        # # updating the list cluster
-        # if len(clusters[key2]) == 1:
-        #     clusters[key1].append(clusters[key2][0])
-        # else:
-        #     clusters[key1].extend(clusters[key2])
-        # del clusters[key2]
+        # print("keys: ", key1, key2)
 
         clusters[key1] = clusters[key1] + clusters[key2]
         del clusters[key2]
 
         # print clusters
-        print("clusters: ", clusters)
+        # print("clusters: ", clusters)
 
         # update the matrix
         matrix_new = reformat_matrix(matrix_new, key1, key2)
@@ -148,31 +149,43 @@ def hierarchical_nail(number_of_clusters):
         # remove one cluster from the list
         l = l - 1
 
-    # list_clusters = []
-    # list_cluster_1 = []
-    # list_cluster_1.append(clusters['0'])
-    #
-    # list_cluster_2 = []
-    # list_cluster_1.append(clusters['100'])
-    # print("list-1: ", list_cluster_1)
-    # print("list_clusters: ", list_cluster_1)
-    # list_clusters.append(list_cluster_1)
-    # list_clusters.append(list_cluster_2)
 
+    # TODO TASK: save in the initial dataframe the label of the clusters that each object belongs to
+    # for every key in the dictionary holding the clusters
+    for key in clusters.keys():
+
+
+
+
+
+
+    # # TODO: plot
+    # fig = plt.figure()
+    # # declare axes: axes3D
+    # ax = fig.add_subplot(projection='3d')
+    #
+    # # show clustering result
+    # color_mark = ['or', 'oc', 'og', 'ob', 'oy', 'om']  # Markers of different clusters 'or' --> 'o'circle，'r'red，'b':blue
+    # count = 0
+    # for cluster_id in clusters.keys():
+    #     objects = clusters[cluster_id] # for every key, save the values in the objects variable
+    #     for i in objects: # then traverse the values of every key
+    #         print(i)
+    #         pt=[0,0,0]
+    #         pt[0]=float(X[i:i + 1,0])
+    #         pt[1] =float(X[i:i + 1,1])
+    #         pt[2] =float(X[i:i + 1,2])
+    #         print(pt)
+    # #         ax.plot(pt[0], pt[1], pt[2],color_mark[count])  # draw points in each cluster
+    # #     count=count+1
+    # # plt.show()
+    # # show_results(5,X,clusters)
 
 
     return clusters
 
 
-# call the hierarchical
-#
-# print(hierarchical_nail(2))
-# iris_data = datasets.load_iris()
-# X = iris_data.data
-clustering = hierarchical_nail(2)
-#
-# pca = PCA(n_components=2)
-# X_transformed = pca.fit_transform(X)
-# plt.scatter(X_transformed[:, 0], X_transformed[:, 1], c=clustering)
-# plt.show()
-# print(clustering)
+
+
+
+

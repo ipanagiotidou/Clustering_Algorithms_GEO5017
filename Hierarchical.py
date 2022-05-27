@@ -83,6 +83,7 @@ def distance_sample_cluster(cluster, value, matrix):
 
 
 def hierarchical(data, number_of_clusters):
+    global key_for_1, key_for_2
     X = data
     m = number_of_clusters
     # create data
@@ -200,11 +201,15 @@ def hierarchical(data, number_of_clusters):
         #print("key__:", key__)
         #print("key_:", key_)
         if key__ < key_ :
-            key_1 = str(int(key__))
-            key_2 = str(int(key_))
+            # key_1 = str(int(key__))
+            # key_2 = str(int(key_))
+            key_1 = int(key__)
+            key_2 = int(key_)
         else:
-            key_1 = str(int(key_))
-            key_2 = str(int(key__))
+            # key_1 = str(int(key_))
+            # key_2 = str(int(key__))
+            key_1 = int(key__)
+            key_2 = int(key_)
 
 
 
@@ -222,9 +227,29 @@ def hierarchical(data, number_of_clusters):
         # print("key_2: ", key_2, type(key_2))
         # # do the magic
 
+
+
+        # search by value
+        for key, value in clusters.items():  # for name, age in dictionary.iteritems():
+            #print(key, type(key), value, type(value))
+            for val in value:
+                if val == key_2:
+                    key_for_2 = key
+                    #print("key_for_2: ", key_for_2)
+            for val in value:
+                if val == key_1:
+                    key_for_1 = key
+                    #print("key_for_1: ", key_for_1)
+
+        # search and replace by key
         print("keys: ",  key_1, key_2)
-        clusters[key_1] = clusters[key_1] + clusters[key_2]
-        del clusters[key_2]
+        clusters[key_for_1] = clusters[key_for_1] + clusters[key_for_2]
+        del clusters[key_for_2]
+
+
+
+
+
 
         print("clusters: ", clusters)
 

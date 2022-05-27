@@ -18,13 +18,14 @@ import csv
 
 
 ### -------------------------------------------- K-means clustering algorithm -------------------------------------
-# TODO: Do I initialize correctly the points? (Arbitrary in the domain or choose one of the sample points?) --> Question on Discord.
-# TODO: Decimal accuracy. I don't take all the decimals as in the txt. Impacts my convergence value selection.
 
-def k_means(features_df):
+# TODO QUESTION: Do I initialize correctly the points? (Arbitrary in the domain or choose one of the sample points?) --> Question on Discord.
+# TODO TASK: Decimal accuracy. I don't take all the decimals as in the txt. Impacts my convergence value selection.
+
+def k_means(df):
 
     k = 5
-    lists = [] # list that holds all the (sub)lists of seperate features, e.g. lists = [[feat_1],[feat_2],[feat_3]]
+    lists = [] # list that holds all the (sub)lists of separate features, e.g. lists = [[feat_1],[feat_2],[feat_3]]
     centroids = [] # list that holds the feature vector of the centroid !
 
     # STEP 1: initialize the centroids
