@@ -155,43 +155,15 @@ def hierarchical_nail(df, number_of_clusters):
     for key in clusters.keys():
         # use the key and retrieve the values
         # since every key is a cluster --> the values will be the objects that belong to this cluster
+        # locate the row where the object is based on its index (val) and assign to the column 'cluster' its dictionary key
         for val in clusters[key]:
-            # locate this object in the dataframe and assing to the column 'cluster' the value of the key --> after turned to int
-            df.loc[val, 'cluster'] = int(key)
-
+            df.loc[val, 'cluster'] = int(str(key))
 
     # print("clusters: \n", clusters)
     # print("df: \n", df)
 
 
-
-
-
-
-
-    # # TODO: plot
-    # fig = plt.figure()
-    # # declare axes: axes3D
-    # ax = fig.add_subplot(projection='3d')
-    #
-    # # show clustering result
-    # color_mark = ['or', 'oc', 'og', 'ob', 'oy', 'om']  # Markers of different clusters 'or' --> 'o'circle，'r'red，'b':blue
-    # count = 0
-    # for cluster_id in clusters.keys():
-    #     objects = clusters[cluster_id] # for every key, save the values in the objects variable
-    #     for i in objects: # then traverse the values of every key
-    #         print(i)
-    #         pt=[0,0,0]
-    #         pt[0]=float(X[i:i + 1,0])
-    #         pt[1] =float(X[i:i + 1,1])
-    #         pt[2] =float(X[i:i + 1,2])
-    #         print(pt)
-    # #         ax.plot(pt[0], pt[1], pt[2],color_mark[count])  # draw points in each cluster
-    # #     count=count+1
-    # # plt.show()
-    # # show_results(5,X,clusters)
-
-
+    # return df # alternative return
     return clusters
 
 

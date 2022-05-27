@@ -15,9 +15,9 @@ from sklearn.decomposition import PCA
 
 ### -------------------------------------------- DBSCAN clustering algorithm -------------------------------------
 # TODO: DBSCAN algorithm
-# TODO: chose the epsilon (ε) parameter
-# TODO: Choose the minimum points (MinPts) parameter
-# TODO: BE VERY CAREFUL: THE KDTREE RETURNS ITSELFT AS WELL.
+# TODO SOS: chose the epsilon (ε) parameter
+# TODO SOS: Choose the minimum points (MinPts) parameter
+# TODO: BE VERY CAREFUL: THE KDTREE RETURNS ITSELF AS WELL.
 
 def n_indices(pt, kdtree, epsilon):
     ns_indices = kdtree.query_ball_point(pt, r=epsilon, p=2.0, workers=1, return_sorted=None, return_length=False)
@@ -34,7 +34,10 @@ def visit_ns(ns_indices, dt, cl_id, cl_of_pts, kdtree, epsilon, minPts):
             if (len(new_n_indices)) >= minPts:
                 visit_ns(new_n_indices,  dt, cl_id, cl_of_pts, kdtree, epsilon, minPts)
 
-def dbscan(dt, minPts, epsilon):
+def dbscan(df, minPts, epsilon):
+    # turn the df into a numpy array
+    dt = df.to_numpy()
+
     kdtree = scipy.spatial.KDTree(dt)
     cl_id = 0
     cl_of_pts = [-1] * len(dt)  # at this point none of the points belong to a cluster
@@ -56,6 +59,11 @@ def dbscan(dt, minPts, epsilon):
         cl_id += 1
 
     print(cl_of_pts)
+
+    for i in cl_of_pts:
+        # TODO: DO WHAT YOU DID EARLIER TO SAVE TO THE CORRECT COLUMNS THE OUTPUT OF THE CLUSTERING.
+        pass
+
     # return the list which holds in which cluster each point belongs to
     return cl_of_pts
 
