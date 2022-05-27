@@ -29,8 +29,8 @@ def main():
     # # ---- to be changed - start ----
     df = Load_the_data.load_the_data()
     # # selected_columns = df[["x", "y", "z"]]
-    # df = df[["x", "y", "z"]]
-    # dt = df.copy().astype(float).to_numpy() # turn the dataframe into an array
+    df = df[["x", "y", "z"]]
+    dt = df.copy().astype(float).to_numpy() # turn the dataframe into an array
     # # # ---- to be changed - end ----
 
     # # TODO: --- --- --- --- call K-MEANS algorithm --- --- --- ---
@@ -48,7 +48,7 @@ def main():
     #
     # # TODO: --- --- --- --- call HIERARCHICAL clustering --- --- --- ---
     # # TODO: X can be a dataframe since we turn the dataframe into an array when we compute the MATRIX
-    # clustering = hierarchical_Nail.hierarchical_nail(df, 5) # pass the dataframe as argument
+    clustering = hierarchical_Nail.hierarchical_nail(df, 5) # pass the dataframe BUT ONLY WITH THE FEATURES !
     # # TODO TASK: return the dataframe 'df' with the labels !
 
 

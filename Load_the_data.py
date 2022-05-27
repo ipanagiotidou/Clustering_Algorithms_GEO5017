@@ -41,7 +41,7 @@ def load_the_data():
             df_xyz = pd.read_table(path + file, delimiter=' ', header=None) # read the .xyz file with a delimiter 'space'
             df_xyz.columns = ["x", "y", "z"] # set the column names of my small dataframe 'df_xyz'
 
-            print(df_xyz) # so far I only have a dataframe with columns x,y,z.
+            # print(df_xyz) # so far I only have a dataframe with columns x,y,z.
 
             # 1) assign the label in the 'label' column
             # 2) save the base_name as integer in the 'bname' column
@@ -50,7 +50,7 @@ def load_the_data():
             df_xyz.loc[:,'bname'] = iname
             df_xyz.loc[:,'label'] = label
 
-            print(df_xyz) # here, I have created the whole dataset with columns x,y,z,label,bname filled with values
+            # print(df_xyz) # here, I have created the whole dataset with columns x,y,z,label,bname filled with values
 
             # merge the sub-dataframe 'df_xyz' created for the specific file to the initialized dataframe 'df' that holds all the files
             df = pd.concat([df, df_xyz], sort=False, ignore_index=True)

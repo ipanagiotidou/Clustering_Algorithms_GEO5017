@@ -102,13 +102,13 @@ def reformat_matrix(matrix, key1, key2):
     return matrix
 
 
-def hierarchical_nail(dataset, number_of_clusters):
+def hierarchical_nail(df, number_of_clusters):
 
     # assign the desired number of clusters into variable m
     m = number_of_clusters
 
     # assign the dataset to variable X
-    X = dataset
+    X = df
 
     # MATRIX
     # call function that computes the initial matrix --> distances between all objects
@@ -153,6 +153,16 @@ def hierarchical_nail(dataset, number_of_clusters):
     # TODO TASK: save in the initial dataframe the label of the clusters that each object belongs to
     # for every key in the dictionary holding the clusters
     for key in clusters.keys():
+        # use the key and retrieve the values
+        # since every key is a cluster --> the values will be the objects that belong to this cluster
+        for val in clusters[key]:
+            # locate this object in the dataframe and assing to the column 'cluster' the value of the key --> after turned to int
+            df.loc[val, 'cluster'] = int(key)
+
+
+    # print("clusters: \n", clusters)
+    # print("df: \n", df)
+
 
 
 
