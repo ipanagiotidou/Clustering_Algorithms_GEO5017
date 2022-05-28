@@ -10,11 +10,10 @@ import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 import os
 import csv
+from sklearn import preprocessing
 
 
-### ---------------------------------------------- Calculate the Features -------------------------------------
 
-# TODO: Calculate the Features
 
 
 ### -------------------------------------------- K-means clustering algorithm -------------------------------------
@@ -22,13 +21,22 @@ import csv
 # TODO QUESTION: Do I initialize correctly the points? (Arbitrary in the domain or choose one of the sample points?) --> Question on Discord.
 # TODO TASK: Decimal accuracy. I don't take all the decimals as in the txt. Impacts my convergence value selection.
 
-def k_means(df):
+def k_means(df_nl, df_feat):
     # TODO: POSSIBLY I HAVE TO CUT THE DATASET IN THE ALGORITHM
     # TODO: SO I SHOULD PROVIDE THE WHOLE DATASET IN THE FUNCTION, AND THE FUNCTION CUTS THE DATASET/
 
 
-    df_final = df
-    df = df[["x", "y", "z"]]
+    df_final = df_nl # εδώ θα προστεθεί το αποτέλεσμα του cluster
+    df = df_feat
+
+    # TODO: NORMALIZE THE DATAFRAME
+    # Normalization = each attribute value / max possible value of this attribute
+    min_max_scaler = preprocessing.MinMaxScaler()
+    x_scaled = min_max_scaler.fit_transform(df)
+    df = pd.DataFrame(x_scaled)
+    df.columns = ["volume", "proj_area", "area_3d", "height", "density_2d","density_3d"]
+    print("df_normalized: \n", df)
+
 
     global clusters_objects
     k = 5
@@ -72,6 +80,7 @@ def k_means(df):
     while n_iter < 100:
 
         # 5 lists for our 5 clusters --> will hold the index of the objects  belonging to them
+        # in every iteration is empty
         cl_0 = []
         cl_1 = []
         cl_2 = []
@@ -142,22 +151,13 @@ def k_means(df):
 
     # print("clusters_objects: \n", clusters_objects)
 
+    print("df: \n", df)
 
-    # # TODO TASK: save in the initial dataframe the label of the clusters that each object belongs to
-    # # for every key in the dictionary holding the clusters
-    # for cluster in clusters_objects:
-    #     for object in cluster:
-    #         print("object: ", object)
-    #     # # use the key and retrieve the values
-    #     # # since every key is a cluster --> the values will be the objects that belong to this cluster
-    #     # # locate the row where the object is based on its index (val) and assign to the column 'cluster' its dictionary key
-    #     # for val in clusters[key]:
-    #     #     df.loc[val, 'cluster'] = int(str(key))
+    df3 = df.combine_first(df_final)
+    print(df3)
 
-    print("df: \n", df_final)
 
-    # after exiting the while loop
-    return(clusters_objects)
+    return df3
 
 
 

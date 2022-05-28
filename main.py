@@ -32,45 +32,43 @@ def main():
 
     # TODO: Load the data - CHECK ABOVE 'TODO SOS'
     # # ---- to be changed - start ----
-    df = Load_the_data.load_the_data()
+    # df = Load_the_data.load_the_data()
     # # selected_columns = df[["x", "y", "z"]]
     # df = df[["x", "y", "z"]]
     # dt = df.copy().astype(float).to_numpy() # turn the dataframe into an array
     # # # ---- to be changed - end ----
 
 
-    # TODO: calculate features
-    df_feat = calculate_features.calculate_features()
-
+    # # TODO: calculate features
+    # df = calculate_features.calculate_features()
+    # df = df[["volume", "proj_area", "area_3d", "height", "density_2d","density_3d"]]
 
 
     # # TODO: --- --- --- --- call K-MEANS algorithm --- --- --- ---
-    # df = Load_the_data.load_the_data()
-    # k_means.k_means(df) # I need the dataframe in k-means
+    # df = calculate_features.calculate_features()
+    # df_nl = df[['bname', 'label']]
+    # k_means.k_means(df_nl, df_feat=df[["volume", "proj_area", "area_3d", "height", "density_2d","density_3d"]]) # I need the dataframe in k-means
+
 
     # # # TODO: --- --- --- --- call DBSCAN --- --- --- ---
     # # # TODO TASK: SET the two parameters for dbscan
-    # df = Load_the_data.load_the_data()
-    # df = df[["x", "y", "z"]]
-    # dt = df.copy().astype(float).to_numpy() # turn the dataframe into an array
-    # data = load_iris()
-    # df = pd.DataFrame(data.data, columns=data.feature_names)
-    # clustering = DBSCAN.dbscan(df, 5, 1) # dataframe
+    # df = calculate_features.calculate_features()
+    # df_feat = df[["volume", "proj_area", "area_3d", "height", "density_2d", "density_3d"]]
+    # df_nl = df[['bname', 'label']]
+    # minPts = 5
+    # epsilon = 15
+    # DBSCAN.dbscan(df_nl, df_feat, minPts, epsilon)
 
-
-    # # # TODO: helpful for depiction
-    # # pca = PCA(n_components=2)
-    # # X_transformed = pca.fit_transform(X)
-    # # plt.scatter(X_transformed[:,0], X_transformed[:,1], c=clustering)
-    # # plt.show()
 
     # # # TODO: --- --- --- --- call HIERARCHICAL clustering --- --- --- ---
     # # # TODO: X can be a dataframe since we turn the dataframe into an array when we compute the MATRIX
     # TOSO: pass the dataframe only with features: df = Load_the_data.load_the_data() --> df = df[["x", "y", "z"]]
-    # df = Load_the_data.load_the_data()
-    # df = df[["x", "y", "z"]]
-    # clustering = hierarchical_Nail.hierarchical_nail(df, 5) # pass the dataframe, only with features
-    # # # TODO TASK: return the dataframe 'df' with the labels !
+    df = calculate_features.calculate_features()
+    df_feat = df[["volume", "proj_area", "area_3d", "height", "density_2d", "density_3d"]]
+    df_nl = df[['bname', 'label']]
+    # TODO SOS : take care of the n = 10**2 value !!!!
+    clustering = hierarchical_Nail.hierarchical_nail(df_nl, df_feat, 5) # pass the dataframe, only with features
+
 
 
 

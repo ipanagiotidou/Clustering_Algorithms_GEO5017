@@ -63,3 +63,31 @@
 # # plt.show()
 # # show_results(5,X,clusters)
 # TODO: PLOT THE RESULTS
+
+# TODO: Taken from K-means
+# # TODO TASK: save in the initial dataframe the label of the clusters that each object belongs to
+# # for every key in the dictionary holding the clusters
+# for cluster in clusters_objects:
+#     for object in cluster:
+#         print("object: ", object)
+#     # # use the key and retrieve the values
+#     # # since every key is a cluster --> the values will be the objects that belong to this cluster
+#     # # locate the row where the object is based on its index (val) and assign to the column 'cluster' its dictionary key
+#     # for val in clusters[key]:
+#     #     df.loc[val, 'cluster'] = int(str(key))
+
+# TODO: DBSCAN: delete if not used --> from previously
+# df = Load_the_data.load_the_data()
+# df = df[["x", "y", "z"]]
+# dt = df.copy().astype(float).to_numpy() # turn the dataframe into an array
+# data = load_iris()
+# df = pd.DataFrame(data.data, columns=data.feature_names)
+# clustering = DBSCAN.dbscan(df, 5, 1) # dataframe
+# TODO: DBSCAN: delete THE ABOVE if not used --> from previously
+
+
+# # # TODO: helpful for depiction
+# # pca = PCA(n_components=2)
+# # X_transformed = pca.fit_transform(X)
+# # plt.scatter(X_transformed[:,0], X_transformed[:,1], c=clustering)
+# # plt.show()

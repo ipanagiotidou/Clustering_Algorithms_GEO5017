@@ -3,6 +3,7 @@ import pandas as pd
 import random
 import math
 import scipy.spatial
+from sklearn import preprocessing
 from scipy.spatial import ConvexHull, distance_matrix
 import glob
 import seaborn as sns
@@ -34,9 +35,19 @@ def visit_ns(ns_indices, dt, cl_id, cl_of_pts, kdtree, epsilon, minPts):
             if (len(new_n_indices)) >= minPts:
                 visit_ns(new_n_indices,  dt, cl_id, cl_of_pts, kdtree, epsilon, minPts)
 
-def dbscan(df, minPts, epsilon):
-    # turn the df into a numpy array
-    dt = df.to_numpy()
+def dbscan(df_nl, df_feat, minPts, epsilon):
+
+    # TODO: NORMALIZE THE DATAFRAME
+    # Normalization = each attribute value / max possible value of this attribute
+    min_max_scaler = preprocessing.MinMaxScaler()
+    x_scaled = min_max_scaler.fit_transform(df_feat)
+    df = pd.DataFrame(x_scaled)
+    df.columns = ["volume", "proj_area", "area_3d", "height", "density_2d","density_3d"]
+    # print("df_normalized: \n", df)
+
+
+    # turn the df_features into a numpy array
+    dt = df_feat.to_numpy()
 
     kdtree = scipy.spatial.KDTree(dt)
     cl_id = 0
@@ -54,17 +65,27 @@ def dbscan(df, minPts, epsilon):
             cl_of_pts[index] = cl_id # update its
             # visit the neighbs of the CORE point, and assign to them the same cluster_index
             visit_ns(n_indices_pt, dt, cl_id, cl_of_pts, kdtree, epsilon, minPts)
+            cl_id +=1
 
+        # TODO: before I had the cl_id here, but every time the previous if didn't give a cluster, the id was increased without a reason.
+        # TODO: so...I moved it in the if statement
+        # TODO: now, I increase the cluster id in case I update
         # increase the cluster index before visiting next point of the dataset
-        cl_id += 1
+        # cl_id += 1
 
-    print(cl_of_pts)
+    # print(cl_of_pts)
 
-    for i in cl_of_pts:
-        # TODO: DO WHAT YOU DID EARLIER TO SAVE TO THE CORRECT COLUMNS THE OUTPUT OF THE CLUSTERING.
-        pass
+    #     # TODO: DO WHAT YOU DID EARLIER TO SAVE TO THE CORRECT COLUMNS THE OUTPUT OF THE CLUSTERING.
+    for i in range(len(cl_of_pts)):
+        # i is the indexing for the row
+        df_nl.loc[i,'cluster'] = cl_of_pts[i]
+
+    df3 = df_nl.combine_first(df_feat)
+    print(df3)
+
+
 
     # return the list which holds in which cluster each point belongs to
-    return cl_of_pts
+    return df3
 
 

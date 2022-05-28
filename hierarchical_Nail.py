@@ -11,6 +11,8 @@ from mpl_toolkits import mplot3d
 import os
 import csv
 import Load_the_data
+from sklearn import preprocessing
+
 
 # check the algorithms
 from sklearn import datasets
@@ -22,7 +24,7 @@ from sklearn.decomposition import PCA
 
 
 # TODO: MAKE SURE THIS VALUE WORKS FOR YOUR DATASET  --> --> --> --> Change 10**2 value
-n = 10**2
+n = 10**5
 
 def compute_matrix(my_data):
     # turn the data into an array
@@ -102,13 +104,22 @@ def reformat_matrix(matrix, key1, key2):
     return matrix
 
 
-def hierarchical_nail(df, number_of_clusters):
+def hierarchical_nail(df_nl, df_feat, number_of_clusters):
+
+    # TODO: normalize the data
+    # Normalization = each attribute value / max possible value of this attribute
+    min_max_scaler = preprocessing.MinMaxScaler()
+    x_scaled = min_max_scaler.fit_transform(df_feat)
+    df = pd.DataFrame(x_scaled)
+    df.columns = ["volume", "proj_area", "area_3d", "height", "density_2d","density_3d"]
+    # print("df_normalized: \n", df)
+
+    # assign the NORMALIZED dataset to variable X
+    X = df
+
 
     # assign the desired number of clusters into variable m
     m = number_of_clusters
-
-    # assign the dataset to variable X
-    X = df
 
     # MATRIX
     # call function that computes the initial matrix --> distances between all objects
@@ -157,11 +168,13 @@ def hierarchical_nail(df, number_of_clusters):
         # since every key is a cluster --> the values will be the objects that belong to this cluster
         # locate the row where the object is based on its index (val) and assign to the column 'cluster' its dictionary key
         for val in clusters[key]:
-            df.loc[val, 'cluster'] = int(str(key))
+            df_nl.loc[val, 'cluster'] = int(str(key))
 
     # print("clusters: \n", clusters)
     # print("df: \n", df)
 
+    df3 = df_nl.combine_first(df_feat)
+    print(df3)
 
     # return df # alternative return
     return clusters

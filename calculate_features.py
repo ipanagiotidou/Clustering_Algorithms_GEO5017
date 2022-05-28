@@ -99,40 +99,7 @@ def calculate_features():
             df = pd.concat([df, df_row], sort=False, ignore_index=True)
 
 
-    print(df)
+    # print(df)
 
     return df
 
-    # 2 # CALCULATE THE HEIGHT OF THE OBJECT
-    # import os
-    # path = r"C:\Users\Panagiotior\Desktop\Q3\ML\hw\GEO5017-A1-Clustering\scene_objects\scene_objects\data"
-    # os.chdir(path)
-    # for file in os.listdir():
-    #     list_z = []
-    #     if file.endswith(".xyz"):
-    #         file_path = f"{path}\{file}"
-    #         with open(file_path) as f:
-    #             lines = f.readlines()
-    #             #print(file)
-    #             for line in lines:
-    #                 attributes = line.split()
-    #                 list_z.append(float(attributes[2]))
-    #             maxi = max(list_z)
-    #             mini = min(list_z)
-    #             height = maxi - mini
-    #             print(height)
-    #
-    #
-    # 3 # CALCULATE THE HEIGHT OF THE OBJECT  - ONE FILE
-    # list_z = []
-    # with open(r"C:\Users\Panagiotior\Desktop\Q3\ML\hw\GEO5017-A1-Clustering\scene_objects\scene_objects\data\000.xyz") as f:
-    #     lines = f.readlines()
-    #     for line in lines:
-    #         attributes = line.split()
-    #         list_z.append(float(attributes[2]))
-    #     max= max(list_z)
-    #     min= min(list_z)
-    #     height = max - min
-    #     print(height)
-    #
-    #
