@@ -65,3 +65,9 @@ def load_half_the_data(df):
     dt = df[["x", "y", "z"]].copy().astype(float).to_numpy()  # it is an array
     # print(dt)
     return dt
+
+def load_bname_label_data(df):
+    df = load_the_data()
+    df = df[["bname", "label"]].copy()
+    # print(dt)
+    return df

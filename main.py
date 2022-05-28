@@ -19,6 +19,7 @@ import Hierarchical
 import DBSCAN
 import k_means
 import hierarchical_Nail
+import calculate_features
 
 
 # check the algorithms
@@ -37,8 +38,14 @@ def main():
     # dt = df.copy().astype(float).to_numpy() # turn the dataframe into an array
     # # # ---- to be changed - end ----
 
+
+    # TODO: calculate features
+    df_feat = calculate_features.calculate_features()
+
+
+
     # # TODO: --- --- --- --- call K-MEANS algorithm --- --- --- ---
-    df = Load_the_data.load_the_data()
+    # df = Load_the_data.load_the_data()
     # k_means.k_means(df) # I need the dataframe in k-means
 
     # # # TODO: --- --- --- --- call DBSCAN --- --- --- ---
@@ -46,9 +53,9 @@ def main():
     # df = Load_the_data.load_the_data()
     # df = df[["x", "y", "z"]]
     # dt = df.copy().astype(float).to_numpy() # turn the dataframe into an array
-    data = load_iris()
-    df = pd.DataFrame(data.data, columns=data.feature_names)
-    clustering = DBSCAN.dbscan(df, 5, 1) # dataframe
+    # data = load_iris()
+    # df = pd.DataFrame(data.data, columns=data.feature_names)
+    # clustering = DBSCAN.dbscan(df, 5, 1) # dataframe
 
 
     # # # TODO: helpful for depiction
