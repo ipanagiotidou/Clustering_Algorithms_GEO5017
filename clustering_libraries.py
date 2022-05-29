@@ -47,7 +47,10 @@ def main():
     # # TODO: --- --- --- --- call K-MEANS algorithm --- --- --- ---
     # df = calculate_features.calculate_features()
     # df_nl = df[['bname', 'label']]
-    # k_means.k_means(df_nl, df_feat=df[["volume", "proj_area", "area_3d", "height", "density_2d","density_3d"]]) # I need the dataframe in k-means
+    # df_feat = df[["volume", "proj_area", "area_3d", "height", "density_2d", "density_3d"]]
+    df = [[2.5, 1], [2.6, 1], [5, 3], [5.1, 3], [7.5, 7], [7.6, 7], [9.5, 9], [9.6, 9], [12, 12], [12.1, 12]]
+    # k_means(df)
+    k_means.k_means(df) # I need the dataframe in k-means
 
 
     # # # TODO: --- --- --- --- call DBSCAN --- --- --- ---
@@ -68,6 +71,18 @@ def main():
     # df_nl = df[['bname', 'label']]
     # # TODO SOS : take care of the n = 10**2 value !!!!
     # clustering = hierarchical_Nail.hierarchical_nail(df_nl, df_feat, 5) # pass the dataframe, only with features
+
+    # HIERARCHICAL PLOT:
+    # TODO: DBSCAN: delete if not used --> from previously
+    # data = load_iris()
+    # df = pd.DataFrame(data.data, columns=data.feature_names)
+    # clustering = DBSCAN.dbscan(df, 5, 1) # dataframe
+
+    # # # TODO: helpful for depiction
+    # pca = PCA(n_components=2)
+    # X_transformed = pca.fit_transform(X)
+    # plt.scatter(X_transformed[:,0], X_transformed[:,1], c=clustering)
+    # plt.show()
 
     pass
 

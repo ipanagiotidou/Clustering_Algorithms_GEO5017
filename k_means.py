@@ -38,7 +38,7 @@ def k_means(df_nl, df_feat):
     print("df_normalized: \n", df)
 
 
-    global clusters_objects
+    global clusters_objects, clusters
     k = 5
     lists = [] # list that holds all the (sub)lists of separate features, e.g. lists = [[feat_1],[feat_2],[feat_3]]
     centroids = [] # list that holds the feature vector of the centroid !
@@ -69,7 +69,7 @@ def k_means(df_nl, df_feat):
 
     # Work with numpy arrays --> the k centroids in an array
     centroids_arr = np.array(centroids)
-    # print(centroids_arr)
+    print(centroids_arr)
 
     # turn the dataframe holding the points in an array
     points_arr = df.to_numpy()
@@ -88,10 +88,11 @@ def k_means(df_nl, df_feat):
         cl_4 = []
 
         # STEP 2: assign each object to a cluster
-        distance = 0
+
         for i in range(len(points_arr)):
             dists_list = [] # save the k distances to the k clusters to this list
             for j in range(len(centroids_arr)): # traverse each of the k centroid vectors
+                distance = 0
                 for c in range(cols): # calculate the distance between the corresponding cols
                     distance = distance + (points_arr[i][c] - centroids_arr[j][c])**2
                 distance = math.sqrt(distance)
@@ -120,11 +121,18 @@ def k_means(df_nl, df_feat):
 
         clusters_objects = [] # a list of dataframes
         # save the objects of the same cluster as one dataframe in the list of dataframes called clusters_objects
-        clusters_objects.append(df.iloc[cl_0])
+        clusters_objects.append(df.iloc[cl_0]) # all the rows
         clusters_objects.append(df.iloc[cl_1])
         clusters_objects.append(df.iloc[cl_2])
         clusters_objects.append(df.iloc[cl_3])
         clusters_objects.append(df.iloc[cl_4])
+
+        clusters = []
+        clusters.append(cl_0)
+        clusters.append(cl_1)
+        clusters.append(cl_2)
+        clusters.append(cl_3)
+        clusters.append(cl_4)
 
         # STEP 3: Calculate the current centroids and update the value of centroids_arr
         # save the previous centroids in a variable for comparison
@@ -133,12 +141,15 @@ def k_means(df_nl, df_feat):
         dists = []
         l = 0
         for n in clusters_objects:
-            # within every cluster, calculate the mean centroid and append to the cur_centroids_arr
-            cur_centroid_arr = n.mean(axis=0).to_numpy()
-            cur_centroids_arr.append((cur_centroid_arr))
-            dist = np.sqrt(np.sum(np.square(prev_centroids_arr[l] - cur_centroid_arr)))
-            dists.append(dist)
-            l += 1
+            if len(n) > 1:
+                # within every cluster, calculate the mean centroid and append to the cur_centroids_arr
+                # print("The DataFrame with mean values of each column is:")
+                cur_centroid = n.mean(axis=0).to_numpy()
+                cur_centroids_arr.append(cur_centroid)
+                dist = np.sqrt(np.sum(np.square(prev_centroids_arr[l] - cur_centroid)))
+                dists.append(dist)
+                l += 1
+
         # check if all centroids converged
         if all(d < 0.00000001 for d in dists):
             print("Convergence achieved in iteration", n_iter)
@@ -149,7 +160,14 @@ def k_means(df_nl, df_feat):
         n_iter += 1  # increase the iteration number every time with step 1
 
 
-    # print("clusters_objects: \n", clusters_objects)
+
+    clusters_list = [i for i in range(len(df))]
+    cluster_index = 0
+    for li in clusters:
+        for p_index in li:
+            clusters_list[p_index] = cluster_index
+        cluster_index += 1
+
 
     print("df: \n", df)
 
@@ -158,10 +176,6 @@ def k_means(df_nl, df_feat):
 
 
     return df3
-
-
-
-
 
 
 

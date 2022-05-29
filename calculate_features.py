@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from scipy.spatial import ConvexHull, distance_matrix
 import os
 import pandas as pd
-
+import statistics
 
 
 def calculate_features():
@@ -63,6 +63,23 @@ def calculate_features():
             # Add volume in the object's dataframe
             df_row.loc[:, 'volume'] = volume
 
+            # # PLOT THE CONVEX HULL
+            # fig = plt.figure()
+            # ax = fig.add_subplot(111, projection="3d")
+            # # Plot defining corner points
+            # ax.plot(pts.T[0], pts.T[1], pts.T[2], "ko")
+            # # 12 = 2 * 6 faces are the simplices (2 simplices per square face)
+            # for s in hull.simplices:
+            #     s = np.append(s, s[0])  # Here we cycle back to the first coordinate
+            #     ax.plot(pts[s, 0], pts[s, 1], pts[s, 2], "r-")
+            # # Make axis label
+            # for i in ["x", "y", "z"]:
+            #     eval("ax.set_{:s}label('{:s}')".format(i, i))
+            # plt.show()
+            # # END OF PLOT THE CONVEX HULL
+
+
+
             # -- -- -- -- -- --2nd FEATURE: PROJECTION AREA -- -- -- -- -- -- --
             hull_xy = ConvexHull(pts_xy)
             # Area: Surface area of the convex hull when input dimension > 2. When input points are 2-dimensional, this is the perimeter of the convex hull.
@@ -71,16 +88,15 @@ def calculate_features():
             df_row.loc[:, 'proj_area'] = proj_area
 
             # -- -- -- -- -- --3rd FEATURE: PROJECTION AREA -- -- -- -- -- -- --
-            hull_xy = ConvexHull(pts)
-            area_3d = hull_xy.area
+            hull = ConvexHull(pts)
+            area_3d = hull.area
             # Add volume in the object's dataframe
             df_row.loc[:, 'area_3d'] = area_3d
 
             # TODO: IF YOU HAVE TIME, CORRECT THE HEIGHT. THE MAX OR MIN values, if based in a single value, might be OUTLIERS.
             # -- -- -- -- -- --4th FEATURE: HEIGHT -- -- -- -- -- -- --
-            maxi = max(list_z)
-            mini = min(list_z)
-            height = maxi - mini
+            median_z = statistics.median(list_z)
+            height = median_z
             # Add volume in the object's dataframe
             df_row.loc[:, 'height'] = height
 
@@ -103,3 +119,4 @@ def calculate_features():
 
     return df
 
+print(calculate_features())
