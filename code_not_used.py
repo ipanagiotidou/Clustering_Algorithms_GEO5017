@@ -152,3 +152,15 @@ for j, k in indices:  # number of clusters
 # accuracy_matrix = pd.DataFrame(accuracy_matrix)
 # print(accuracy_matrix)
 # TODO: code from evaluation - end
+
+
+# TODO: ALL COMBINATIONS
+# df_feat = df[["density_3d", "volume", "height"]] # OK
+# df_feat = df[["density_3d", "volume", "density_2d"]] # NOT
+# df_feat = df[["density_3d", "volume", "area_3d"]] # NOT
+# df_feat = df[["density_3d", "volume", "proj_area"]] # NOT
+# df_feat = df[["density_3d", "height", "density_2d"]] # COULD BE
+# df_feat = df[["density_3d", "height", "area_3d"]] # COULD BE
+# df_feat = df[["density_3d", "height", "proj_area"]] #  COULD BE
+# df_feat = df[["density_3d", "area_3d", "proj_area"]] # NOT
+# TODO: ALL COMBINATIONS finished

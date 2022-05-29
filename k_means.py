@@ -2,63 +2,42 @@ import numpy as np
 import pandas as pd
 import random
 import math
-import scipy.spatial
-from scipy.spatial import ConvexHull, distance_matrix
-import glob
-import seaborn as sns
 import matplotlib.pyplot as plt
-from mpl_toolkits import mplot3d
-import os
-import csv
 from sklearn import preprocessing
-import EVALUATION
-
-
-
+import validation_method
 
 
 ### -------------------------------------------- K-means clustering algorithm -------------------------------------
-
-# TODO QUESTION: Do I initialize correctly the points? (Arbitrary in the domain or choose one of the sample points?) --> Question on Discord.
 # TODO TASK: Decimal accuracy. I don't take all the decimals as in the txt. Impacts my convergence value selection.
 
-def k_means(df_nl, df_feat):
-    # TODO: POSSIBLY I HAVE TO CUT THE DATASET IN THE ALGORITHM
-    # TODO: SO I SHOULD PROVIDE THE WHOLE DATASET IN THE FUNCTION, AND THE FUNCTION CUTS THE DATASET/
+def k_means(df_nl, df): # where df_nl is the dataframe with basename and label and df the dataframe with features only
 
-
-    df_final = df_nl # εδώ θα προστεθεί το αποτέλεσμα του cluster
-    df = df_feat
-
-    # TODO: NORMALIZE THE DATAFRAME
-    # Normalization = each attribute value / max possible value of this attribute
+    # TODO: NORMALIZE the features = each attribute value / max possible value of this attribute
     min_max_scaler = preprocessing.MinMaxScaler()
     x_scaled = min_max_scaler.fit_transform(df)
     df = pd.DataFrame(x_scaled)
-    df.columns = ["density_2d", "proj_area", "height"]
-    # df.columns = ["volume", "proj_area", "area_3d", "height", "density_2d","density_3d"]
+    # TODO: add here the df.columns names --> ...
     # print("df_normalized: \n", df)
 
 
     global clusters_objects, clusters
     k = 5
-    lists = [] # list that holds all the (sub)lists of separate features, e.g. lists = [[feat_1],[feat_2],[feat_3]]
-    centroids = [] # list that holds the feature vector of the centroid !
+    lists = []
+    centroids = []
 
     # STEP 1: initialize the centroids
-    # TODO TASK: IT CAN BE SIMPLIFIED !!!
-    # Find my domain and create a resolution
-    cols = int(len(df.columns)) # TODO: possibly it's gonna be different when I will have my features
-    for c in df.columns: # where c is the x,y,z --> the columns of the dataframe
-        list_xyz = df[c].tolist() # add all the column x in a sublist in the 'lists' list, and so on for the rest of the columns
-        lists.append(list_xyz) # append the sublist to the list 'lists'
-    mini = min(lists[0]) # ask for the smallest value of the first feature 'x'
-    maxi = max(lists[0]) # and for the biggest value
+    # Find my domain and create a resolution metre based on the number of clusters and range of first feature.
+    cols = int(len(df.columns))
+    for c in df.columns:
+        list_xyz = df[c].tolist() # add the first feature values of all the objects in a list
+        lists.append(list_xyz) # then append the above sublist to the 'lists'
+    mini = min(lists[0]) # ask for the smallest, and biggest values of the first feature 'x'
+    maxi = max(lists[0])
     res = (maxi - mini) / k  # find the resolution
 
-    # Initialize my k centroids. I force the centroids to initialize far away from each other, forcing the first feature to be
-    # taking values in a grid format. e.g. the first centroid is initialized in min_x and the second centroid is initialized in
-    # min_x + resolution of my domain for with as many cells as the number of the clusters.
+    # Forcing the centroids to initialize far away from each other:
+    # a) Force the first feature of every centroid to take values min(x) and then min(x)+resolution and so on.
+    # b) Enforce randomness with letting the other features take random values from the dataset.
     for d in range(k):
         centroid = []
         for i in range(cols):
@@ -69,20 +48,17 @@ def k_means(df_nl, df_feat):
                 centroid.append(random.choice(lists[i]))
         centroids.append(centroid)
 
-    # Work with numpy arrays --> the k centroids in an array
+    # Centroids in array format
     centroids_arr = np.array(centroids)
-    # print(centroids_arr)
 
-    # turn the dataframe holding the points in an array
+    # Objects in array format
     points_arr = df.to_numpy()
-    # print(points_arr)
 
-    # Start the while loop
+    # Start the loop of refinement of the centroids.
     n_iter = 0
     while n_iter < 100:
 
-        # 5 lists for our 5 clusters --> will hold the index of the objects  belonging to them
-        # in every iteration is empty
+        # 5 lists for the 5 clusters
         cl_0 = []
         cl_1 = []
         cl_2 = []
@@ -90,45 +66,47 @@ def k_means(df_nl, df_feat):
         cl_4 = []
 
         # STEP 2: assign each object to a cluster
+        # measure the distance between every object and each of the k centroids
 
-        for i in range(len(points_arr)):
-            dists_list = [] # save the k distances to the k clusters to this list
+        for i in range(len(points_arr)): # traverse every object
+            dists_list = []
             for j in range(len(centroids_arr)): # traverse each of the k centroid vectors
                 distance = 0
-                for c in range(cols): # calculate the distance between the corresponding cols
+                for c in range(cols):
                     distance = distance + (points_arr[i][c] - centroids_arr[j][c])**2
                 distance = math.sqrt(distance)
                 # add the calculated distance to the dists_list.
                 dists_list.append(distance)
-            # find the index of the minimun distance
+            # find the index of the minimun distance to find the closest centroid
             min_value = min(dists_list)
             min_index = dists_list.index(min_value)
 
-            # add the objects to the correct list based on the returned index (min_index)
+            # based on the returned index (min_index), I assign the object to a cluster.
             if min_index == 0:
                 cl_0.append(i)
-                df_final.loc[i, 'cluster'] = 0
+                df_nl.loc[i, 'cluster'] = 0
             if min_index == 1:
                 cl_1.append(i)
-                df_final.loc[i, 'cluster'] = 1
+                df_nl.loc[i, 'cluster'] = 1
             if min_index == 2:
                 cl_2.append(i)
-                df_final.loc[i, 'cluster'] = 2
+                df_nl.loc[i, 'cluster'] = 2
             if min_index == 3:
                 cl_3.append(i)
-                df_final.loc[i, 'cluster'] = 3
+                df_nl.loc[i, 'cluster'] = 3
             if min_index == 4:
                 cl_4.append(i)
-                df_final.loc[i, 'cluster'] = 4
+                df_nl.loc[i, 'cluster'] = 4
 
         clusters_objects = [] # a list of dataframes
-        # save the objects of the same cluster as one dataframe in the list of dataframes called clusters_objects
-        clusters_objects.append(df.iloc[cl_0]) # all the rows
+        # with df.iloc[cl_0] I locate all the rows from the initial dataframe that belong to cluster 0 and so on.
+        clusters_objects.append(df.iloc[cl_0]) # cl_0 is a list, I pass a list with indices to iloc function.
         clusters_objects.append(df.iloc[cl_1])
         clusters_objects.append(df.iloc[cl_2])
         clusters_objects.append(df.iloc[cl_3])
         clusters_objects.append(df.iloc[cl_4])
 
+        # Helpful for Plotting --> create a list with sublists, one for every cluster
         clusters = []
         clusters.append(cl_0)
         clusters.append(cl_1)
@@ -162,7 +140,8 @@ def k_means(df_nl, df_feat):
         n_iter += 1  # increase the iteration number every time with step 1
 
 
-
+    # Helpful for Plotting --> return a list with indices, indicating the cluster in which every object belongs to.
+    # Pass cluster_list to Plotting. c=cluster_list
     clusters_list = [i for i in range(len(df))]
     cluster_index = 0
     for li in clusters:
@@ -171,22 +150,21 @@ def k_means(df_nl, df_feat):
         cluster_index += 1
 
 
-    print("df_final: \n", df_final)
+    # print the clustered version of the dataframe of objects
+    # print("df_nl: \n", df_nl)
 
-    # df3 = df.combine_first(df_final)
-    # print(df3)
+    # TODO: EVALUATION method
+    error_matrix = validation_method.create_error_matrix(df_nl, k)
 
-    # TODO: EVALUATION
-    error_matrix = EVALUATION.create_error_matrix(df_final, k)
-
-    # PLOT
-    X = np.array(df_feat)
+    # TODO: PLOT
+    X = np.array(df)
     fig = plt.figure()
     ax = plt.axes(projection='3d')
     ax.scatter3D(X[:, 0], X[:, 1], X[:, 2], c=clusters_list, cmap='Set1')
     plt.show()
 
-    return df_final, k
+    # todo: return
+    return df_nl, k
 
 
 
