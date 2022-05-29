@@ -119,4 +119,3 @@ def calculate_features():
 
     return df
 
-print(calculate_features())

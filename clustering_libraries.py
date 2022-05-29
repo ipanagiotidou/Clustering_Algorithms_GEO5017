@@ -20,6 +20,7 @@ import DBSCAN
 import k_means
 import hierarchical_Nail
 import calculate_features
+import EVALUATION
 
 
 # check the algorithms
@@ -45,12 +46,15 @@ def main():
 
 
     # # TODO: --- --- --- --- call K-MEANS algorithm --- --- --- ---
-    # df = calculate_features.calculate_features()
-    # df_nl = df[['bname', 'label']]
-    # df_feat = df[["volume", "proj_area", "area_3d", "height", "density_2d", "density_3d"]]
-    df = [[2.5, 1], [2.6, 1], [5, 3], [5.1, 3], [7.5, 7], [7.6, 7], [9.5, 9], [9.6, 9], [12, 12], [12.1, 12]]
-    # k_means(df)
-    k_means.k_means(df) # I need the dataframe in k-means
+    df = calculate_features.calculate_features()
+    df_nl = df[['bname', 'label']]
+    df_feat = df[["volume", "proj_area", "area_3d", "height", "density_2d", "density_3d"]]
+    df_clustered, number_of_clusters = k_means.k_means(df_nl, df_feat) # I need the dataframe in k-means
+    # Call the Evaluation function for k-means
+    error_matrix = EVALUATION.create_error_matrix(df_clustered, number_of_clusters)
+
+
+
 
 
     # # # TODO: --- --- --- --- call DBSCAN --- --- --- ---

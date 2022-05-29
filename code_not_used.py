@@ -91,3 +91,9 @@
 # # X_transformed = pca.fit_transform(X)
 # # plt.scatter(X_transformed[:,0], X_transformed[:,1], c=clustering)
 # # plt.show()
+
+# TODO: play dataframe for evaluation
+# Create a PLAY DataFrame
+# data = {'label': ['building', 'car', 'building', 'fence', 'pole', 'building', 'tree' ], 'cluster': [0,1,4,2,3,0, 2]}
+# play_df = pd.DataFrame(data)
+# # print(play_df)

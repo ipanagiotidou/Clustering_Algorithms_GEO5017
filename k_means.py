@@ -35,7 +35,7 @@ def k_means(df_nl, df_feat):
     x_scaled = min_max_scaler.fit_transform(df)
     df = pd.DataFrame(x_scaled)
     df.columns = ["volume", "proj_area", "area_3d", "height", "density_2d","density_3d"]
-    print("df_normalized: \n", df)
+    # print("df_normalized: \n", df)
 
 
     global clusters_objects, clusters
@@ -69,7 +69,7 @@ def k_means(df_nl, df_feat):
 
     # Work with numpy arrays --> the k centroids in an array
     centroids_arr = np.array(centroids)
-    print(centroids_arr)
+    # print(centroids_arr)
 
     # turn the dataframe holding the points in an array
     points_arr = df.to_numpy()
@@ -169,13 +169,13 @@ def k_means(df_nl, df_feat):
         cluster_index += 1
 
 
-    print("df: \n", df)
+    print("df_final: \n", df_final)
 
-    df3 = df.combine_first(df_final)
-    print(df3)
+    # df3 = df.combine_first(df_final)
+    # print(df3)
 
 
-    return df3
+    return df_final, k
 
 
 
