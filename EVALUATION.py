@@ -27,30 +27,9 @@ def create_error_matrix(df, number_of_clusters):
 
 
     matrix_df = pd.DataFrame(matrix, columns=[i for i in range(n)], index=['building', 'car', 'fence', 'tree', 'pole'])
-    # print(matrix_df)
+    print("matrix_df: \n", matrix_df)
 
-    # Now, choose the maximum value per row and divide with 100 --> number of objects for buildings, cars, fences, trees, poles.
-    # Find the column index which has the maximum value for each row
-    column_indices = matrix_df.idxmax(axis=1)
-
-    accuracies = []
-    for i in range(5): # 5 categories
-        for j in column_indices:
-            if i == j:
-                accuracies.append(matrix[i][column_indices[j]] / 100)
-
-
-    # TODO: works only for 5 clusters
-    # accuracies.append(matrix[0][column_indices[0]] / 100)
-    # accuracies.append(matrix[1][column_indices[1]] / 100)
-    # accuracies.append(matrix[2][column_indices[2]] / 100)
-    # accuracies.append(matrix[3][column_indices[3]] / 100)
-    # accuracies.append(matrix[4][column_indices[4]] / 100)
-
-
-    accuracy_matrix = {'label': ['building', 'car', 'fence', 'tree', 'pole'], 'accuracy': [i for i in accuracies]}
-    accuracy_matrix = pd.DataFrame(accuracy_matrix)
-    print(accuracy_matrix)
 
 
     return 0
+

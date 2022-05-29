@@ -11,6 +11,7 @@ from mpl_toolkits import mplot3d
 import os
 import csv
 from sklearn import preprocessing
+import EVALUATION
 
 
 
@@ -34,7 +35,8 @@ def k_means(df_nl, df_feat):
     min_max_scaler = preprocessing.MinMaxScaler()
     x_scaled = min_max_scaler.fit_transform(df)
     df = pd.DataFrame(x_scaled)
-    df.columns = ["volume", "proj_area", "area_3d", "height", "density_2d","density_3d"]
+    df.columns = ["density_2d", "proj_area", "height"]
+    # df.columns = ["volume", "proj_area", "area_3d", "height", "density_2d","density_3d"]
     # print("df_normalized: \n", df)
 
 
@@ -174,6 +176,15 @@ def k_means(df_nl, df_feat):
     # df3 = df.combine_first(df_final)
     # print(df3)
 
+    # TODO: EVALUATION
+    error_matrix = EVALUATION.create_error_matrix(df_final, k)
+
+    # PLOT
+    X = np.array(df_feat)
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.scatter3D(X[:, 0], X[:, 1], X[:, 2], c=clusters_list, cmap='Set1')
+    plt.show()
 
     return df_final, k
 

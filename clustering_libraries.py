@@ -48,10 +48,23 @@ def main():
     # # TODO: --- --- --- --- call K-MEANS algorithm --- --- --- ---
     df = calculate_features.calculate_features()
     df_nl = df[['bname', 'label']]
-    df_feat = df[["volume", "proj_area", "area_3d", "height", "density_2d", "density_3d"]]
+    # TODO: choose the desired features
+    # df_feat = df[["density_3d", "volume", "height"]] # OK
+    # df_feat = df[["density_3d", "volume", "density_2d"]] # NOT
+    # df_feat = df[["density_3d", "volume", "area_3d"]] # NOT
+    # df_feat = df[["density_3d", "volume", "proj_area"]] # NOT
+    # df_feat = df[["density_3d", "height", "density_2d"]] # COULD BE
+    # df_feat = df[["density_3d", "height", "area_3d"]] # COULD BE
+    # df_feat = df[["density_3d", "height", "proj_area"]] #  COULD BE
+    df_feat = df[["density_3d", "area_3d", "proj_area"]] # NOT
+
+    # df_feat = df[["volume", "proj_area", "area_3d", "height", "density_2d", "density_3d"]]
+    # df_feat = df[["volume", "proj_area", "area_3d", "height", "density_2d", "density_3d"]]
+    # df_feat = df[["volume", "proj_area", "area_3d", "height", "density_2d", "density_3d"]]
+    # df_feat = df[["volume", "proj_area", "area_3d", "height", "density_2d", "density_3d"]]
+    # df_feat = df[["volume", "proj_area", "area_3d", "height", "density_2d", "density_3d"]]
     df_clustered, number_of_clusters = k_means.k_means(df_nl, df_feat) # I need the dataframe in k-means
-    # Call the Evaluation function for k-means
-    error_matrix = EVALUATION.create_error_matrix(df_clustered, number_of_clusters)
+
 
 
 

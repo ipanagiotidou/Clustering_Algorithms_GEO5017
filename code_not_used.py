@@ -97,3 +97,58 @@
 # data = {'label': ['building', 'car', 'building', 'fence', 'pole', 'building', 'tree' ], 'cluster': [0,1,4,2,3,0, 2]}
 # play_df = pd.DataFrame(data)
 # # print(play_df)
+
+
+# TODO: EVALUATION - works only for 5 clusters
+# accuracies.append(matrix[0][column_indices[0]] / 100)
+# accuracies.append(matrix[1][column_indices[1]] / 100)
+# accuracies.append(matrix[2][column_indices[2]] / 100)
+# accuracies.append(matrix[3][column_indices[3]] / 100)
+# accuracies.append(matrix[4][column_indices[4]] / 100)
+
+# # Create a PLAY DataFrame
+# data = {
+#     'label': ['building', 'car', 'building', 'fence', 'pole', 'building', 'tree', 'fence', 'fence', 'fence', 'fence',
+#               'pole',
+#               'building', 'building', 'car', 'car', 'car', 'car', 'pole', 'pole', 'pole', 'tree', 'tree', 'tree',
+#               'tree'],
+#     'cluster': [0, 1, 4, 2, 3, 0, 2, 4, 4, 4, 4, 4, 0, 0, 1, 2, 4, 4, 4, 3, 2, 3, 3, 4, 3]}
+# play_df = pd.DataFrame(data)
+# # print(play_df)
+# error_matrix = EVALUATION.create_error_matrix(play_df, number_of_clusters=5)
+
+# TODO: code from evaluation
+# Now, choose the maximum value per row and divide with 100 --> number of objects for buildings, cars, fences, trees, poles.
+# Find the column index which has the maximum value for each row
+# column_indices = matrix_df.idxmax(axis=1)
+indices = []
+matrix_copy = np.copy(matrix)
+for i in range(number_of_clusters):  # do as many times as the number of clusters
+    result = np.where(matrix_copy == np.amax(matrix_copy))
+    listOfCordinates = list(zip(result[0], result[1]))
+    indices.append(listOfCordinates[0])
+    matrix_copy[
+        listOfCordinates[0][0]] = 0  # after that this row and column will never be visited again (category and cluster)
+    matrix_copy[:, listOfCordinates[0][1]] = 0
+    # print(matrix)
+# print("indices: ", indices)
+accuracies = []
+for j, k in indices:  # number of clusters
+    # print("j,k:", j,k)
+    # print(matrix[j][k])
+    accuracies.append(matrix[j][k] / 100)
+    if j == 0:
+        print("building:", matrix[j][k] / 100)
+    if j == 1:
+        print("car:", matrix[j][k] / 100)
+    if j == 2:
+        print("fence:", matrix[j][k] / 100)
+    if j == 3:
+        print("tree:", matrix[j][k] / 100)
+    if j == 4:
+        print("pole:", matrix[j][k] / 100)
+
+# accuracy_matrix = {'label': ['building', 'car', 'fence', 'tree', 'pole'], 'accuracy': [i for i in accuracies]}
+# accuracy_matrix = pd.DataFrame(accuracy_matrix)
+# print(accuracy_matrix)
+# TODO: code from evaluation - end
