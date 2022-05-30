@@ -1,24 +1,16 @@
 import numpy as np
 import pandas as pd
-import random
-import math
 import scipy.spatial
 from sklearn import preprocessing
-from scipy.spatial import ConvexHull, distance_matrix
-import glob
-import seaborn as sns
 import matplotlib.pyplot as plt
-from mpl_toolkits import mplot3d
-import os
-import csv
-from sklearn.decomposition import PCA
+import validation_method
 
 
 ### -------------------------------------------- DBSCAN clustering algorithm -------------------------------------
 # TODO: DBSCAN algorithm
 # TODO SOS: chose the epsilon (ε) parameter
 # TODO SOS: Choose the minimum points (MinPts) parameter
-# TODO: BE VERY CAREFUL: THE KDTREE RETURNS ITSELF AS WELL.
+
 
 def n_indices(pt, kdtree, epsilon):
     ns_indices = kdtree.query_ball_point(pt, r=epsilon, p=2.0, workers=1, return_sorted=None, return_length=False)
@@ -27,66 +19,75 @@ def n_indices(pt, kdtree, epsilon):
 def visit_ns(ns_indices, dt, cl_id, cl_of_pts, kdtree, epsilon, minPts):
     # visit the neighbours one by one
     for n_index in ns_indices:
-        # if the neighbour doesn't belong to a cluster, add it to this one.
+        # if the neighbour doesn't belong to a cluster, add it to the current cluster_id.
         if cl_of_pts[n_index] == -1:
             cl_of_pts[n_index] = cl_id
             # If the current neighbour is a CORE point then call again the same function
             new_n_indices = n_indices(dt[n_index], kdtree, epsilon)
-            if (len(new_n_indices)) >= minPts:
+            if (len(new_n_indices)) >= minPts: # If core point test
                 visit_ns(new_n_indices,  dt, cl_id, cl_of_pts, kdtree, epsilon, minPts)
 
 def dbscan(df_nl, df_feat, minPts, epsilon):
 
-    # TODO: NORMALIZE THE DATAFRAME
-    # Normalization = each attribute value / max possible value of this attribute
+    # TODO: NORMALIZE THE DATAFRAME = each attribute value / max possible value of this attribute
     min_max_scaler = preprocessing.MinMaxScaler()
     x_scaled = min_max_scaler.fit_transform(df_feat)
     df = pd.DataFrame(x_scaled)
-    df.columns = ["volume", "proj_area", "area_3d", "height", "density_2d","density_3d"]
-    # print("df_normalized: \n", df)
+    print("df_normalized: \n", df)
 
-
-    # turn the df_features into a numpy array
+    # turn the features dataframe into an array
     dt = df_feat.to_numpy()
 
+    # create the kdtree of all the points
     kdtree = scipy.spatial.KDTree(dt)
+
+    # initiate a cluster id
     cl_id = 0
-    cl_of_pts = [-1] * len(dt)  # at this point none of the points belong to a cluster
+    # cl_of_pts is a list containing the cluster id of every object
+    cl_of_pts = [-1] * len(dt)   # in the beginning, all objects set to -1 --> meaning no cluster is assigned
 
     # traverse all the points
-    for index, pt in enumerate(dt):
-        # If the point belongs to a cluster
-        if cl_of_pts[index] != -1:  # if the point belongs to a cluster, continue
+    for index, pt in enumerate(dt): # create indexing with 'enumerate' function
+
+        # If the point belongs to a cluster, visit the next point
+        if cl_of_pts[index] != -1:
             continue
 
-        # If the point is a CORE point, that doesn't belong to a cluster, assign it a cluster_index
+        # If the point is a CORE point, that doesn't belong to a cluster, assign it to the current cluster_index (cluster id)
         n_indices_pt = n_indices(pt, kdtree, epsilon)
-        if len(n_indices_pt) >= minPts:
-            cl_of_pts[index] = cl_id # update its
-            # visit the neighbs of the CORE point, and assign to them the same cluster_index
+        if len(n_indices_pt) >= minPts: # check for core points
+            cl_of_pts[index] = cl_id # update its id
+            # visit its neighbours and assign to them the same cluster_index
             visit_ns(n_indices_pt, dt, cl_id, cl_of_pts, kdtree, epsilon, minPts)
             cl_id +=1
 
-        # TODO: before I had the cl_id here, but every time the previous if didn't give a cluster, the id was increased without a reason.
-        # TODO: so...I moved it in the if statement
-        # TODO: now, I increase the cluster id in case I update
-        # increase the cluster index before visiting next point of the dataset
-        # cl_id += 1
 
     # print(cl_of_pts)
 
-    #     # TODO: DO WHAT YOU DID EARLIER TO SAVE TO THE CORRECT COLUMNS THE OUTPUT OF THE CLUSTERING.
+    # add the cluster category to the datafame --> pass the row of the dataframe to the iloc function, update 'cluster' column
     for i in range(len(cl_of_pts)):
         # i is the indexing for the row
         df_nl.loc[i,'cluster'] = cl_of_pts[i]
 
-    df3 = df_nl.combine_first(df_feat)
-    print(df3)
+    # todo: Count occurrence of element '-1' in numpy array
+    # cl_of_pts_arr = np.array(cl_of_pts)
+    # count = (cl_of_pts_arr == -1).sum()
+    # print("count unclustered points: ", count)
 
+    # TODO: call EVALUATION method
+    n = len(set(cl_of_pts)) # take all unique values from the list 'cl_of_pts' to find the number of clusters
+    error_matrix = validation_method.create_error_matrix(df_nl, n)
+
+    # TODO: PLOT
+    X = np.array(df)
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.scatter3D(X[:, 0], X[:, 1], X[:, 2], c=cl_of_pts, cmap='Set1')
+    plt.show()
 
 
     # return the list which holds in which cluster each point belongs to
-    return df3
+    return df_nl
 
 
 

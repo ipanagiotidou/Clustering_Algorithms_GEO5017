@@ -8,7 +8,9 @@ import validation_method
 
 
 ### -------------------------------------------- K-means clustering algorithm -------------------------------------
-# TODO TASK: Decimal accuracy. I don't take all the decimals as in the txt. Impacts my convergence value selection.
+# TODO REMAINING TASKS:
+#  - - - Decimal accuracy. I don't take all the decimals as in the txt. Impacts my convergence value selection.
+
 
 def k_means(df_nl, df): # where df_nl is the dataframe with basename and label and df the dataframe with features only
 
@@ -140,8 +142,7 @@ def k_means(df_nl, df): # where df_nl is the dataframe with basename and label a
         n_iter += 1  # increase the iteration number every time with step 1
 
 
-    # Helpful for Plotting --> return a list with indices, indicating the cluster in which every object belongs to.
-    # Pass cluster_list to Plotting. c=cluster_list
+    # Helpful for Plotting --> c=cluster_list
     clusters_list = [i for i in range(len(df))]
     cluster_index = 0
     for li in clusters:
@@ -153,7 +154,7 @@ def k_means(df_nl, df): # where df_nl is the dataframe with basename and label a
     # print the clustered version of the dataframe of objects
     # print("df_nl: \n", df_nl)
 
-    # TODO: EVALUATION method
+    # TODO: call EVALUATION method
     error_matrix = validation_method.create_error_matrix(df_nl, k)
 
     # TODO: PLOT
@@ -165,9 +166,4 @@ def k_means(df_nl, df): # where df_nl is the dataframe with basename and label a
 
     # todo: return
     return df_nl, k
-
-
-
-
-
 

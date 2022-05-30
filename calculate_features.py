@@ -1,16 +1,11 @@
-# Modules
-import Load_the_data
-# # 1 # CALCULATE THE CONVEX HULL and VOLUME
 import numpy as np
-import matplotlib.pyplot as plt
-# from mpl_toolkits.mplot3d import Axes3D
 from scipy.spatial import ConvexHull, distance_matrix
 import os
 import pandas as pd
 import statistics
 
 
-def calculate_features():
+def load_and_calculate_features():
     global label
     files = os.listdir("C:/Users/Panagiotior/Desktop/Q3/MachineLearning/hw/GEO5017-A1-Clustering/scene_objects/scene_objects/data")
     path = "C:/Users/Panagiotior/Desktop/Q3/MachineLearning/hw/GEO5017-A1-Clustering/scene_objects/scene_objects/data/"
@@ -63,23 +58,6 @@ def calculate_features():
             # Add volume in the object's dataframe
             df_row.loc[:, 'volume'] = volume
 
-            # # PLOT THE CONVEX HULL
-            # fig = plt.figure()
-            # ax = fig.add_subplot(111, projection="3d")
-            # # Plot defining corner points
-            # ax.plot(pts.T[0], pts.T[1], pts.T[2], "ko")
-            # # 12 = 2 * 6 faces are the simplices (2 simplices per square face)
-            # for s in hull.simplices:
-            #     s = np.append(s, s[0])  # Here we cycle back to the first coordinate
-            #     ax.plot(pts[s, 0], pts[s, 1], pts[s, 2], "r-")
-            # # Make axis label
-            # for i in ["x", "y", "z"]:
-            #     eval("ax.set_{:s}label('{:s}')".format(i, i))
-            # plt.show()
-            # # END OF PLOT THE CONVEX HULL
-
-
-
             # -- -- -- -- -- --2nd FEATURE: PROJECTION AREA -- -- -- -- -- -- --
             hull_xy = ConvexHull(pts_xy)
             # Area: Surface area of the convex hull when input dimension > 2. When input points are 2-dimensional, this is the perimeter of the convex hull.
@@ -93,14 +71,12 @@ def calculate_features():
             # Add volume in the object's dataframe
             df_row.loc[:, 'area_3d'] = area_3d
 
-            # TODO: IF YOU HAVE TIME, CORRECT THE HEIGHT. THE MAX OR MIN values, if based in a single value, might be OUTLIERS.
-            # -- -- -- -- -- --4th FEATURE: HEIGHT -- -- -- -- -- -- --
+            # -- -- -- -- -- --4th FEATURE: median HEIGHT -- -- -- -- -- -- --
             median_z = statistics.median(list_z)
             height = median_z
             # Add volume in the object's dataframe
             df_row.loc[:, 'height'] = height
 
-            # TODO: The point density is in 2D. What are the benefits if I calculate it in 3D ?
             # -- -- -- -- -- --5th FEATURE: POINT DENSITY 2D -- -- -- -- -- -- --
             density_2d = proj_area / len(pts_list)
             # Add volume in the object's dataframe
@@ -113,7 +89,6 @@ def calculate_features():
 
             # AFTER CALCULATING ALL THE FEATURES --> concatenate the row (object) to the BIG dataframe
             df = pd.concat([df, df_row], sort=False, ignore_index=True)
-
 
     # print(df)
 
