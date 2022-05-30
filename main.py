@@ -7,14 +7,14 @@ import calculate_features
 def main():
 
     # TODO: --- --- --- --- call K-MEANS algorithm --- --- --- ---
-    # # todo: calculate features
-    # df = calculate_features.load_and_calculate_features()
-    # df_nl = df[['bname', 'label']]
-    # # todo: choose for the desired features
-    # df_feat = df[["density_3d", "height", "area_3d"]] # chosen
-    # # df_feat = df[["density_3d", "height", "proj_area"]] #  alternative
-    # # todo: call k_means function
-    # df_clustered, number_of_clusters = k_means.k_means(df_nl, df_feat)
+    # todo: calculate features
+    df = calculate_features.load_and_calculate_features()
+    df_nl = df[['bname', 'label']]
+    # todo: choose for the desired features
+    df_feat = df[["density_3d", "height", "area_3d"]] # chosen
+    # df_feat = df[["density_3d", "height", "proj_area"]] #  alternative
+    # todo: call k_means function
+    df_clustered, number_of_clusters = k_means.k_means(df_nl, df_feat)
 
 
     # TODO: --- --- --- --- call DBSCAN algorithm --- --- --- ---
