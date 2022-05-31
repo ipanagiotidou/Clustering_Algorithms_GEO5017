@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import validation_method
 
 ### -------------------------------------------- HIERARCHICAL clustering algorithm -------------------------------------
-# TODO remaining TASK: MAKE SURE THIS VALUE WORKS FOR YOUR DATASET  --> --> --> --> Change 10**2 value
+# TODO TASK: make sure this value works for the dataset
 n = 10**2
 
 def compute_matrix(my_data):
@@ -34,9 +34,9 @@ def compute_matrix(my_data):
 
 def new_cluster(matrix):
     '''
-    The function takes a matrix and returns the row and column (indices) where it found the minimum value.
+    The function takes a matrix and returns the row and column (indices) where it finds the minimum value.
     These indices indicate the objects that should be grouped in the same cluster.
-    Returns the indices in ascending order, in string format since I will use them as keys to retrieve values from a dictionary.
+    Returns the indices in ascending order, in string format since I will use them as keys to retrieve values from the dictionary.
     '''
     c = []
 

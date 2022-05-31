@@ -7,8 +7,8 @@ import statistics
 
 def load_and_calculate_features():
     global label
-    files = os.listdir("C:/Users/Panagiotior/Desktop/Q3/MachineLearning/hw/GEO5017-A1-Clustering/scene_objects/scene_objects/data")
-    path = "C:/Users/Panagiotior/Desktop/Q3/MachineLearning/hw/GEO5017-A1-Clustering/scene_objects/scene_objects/data/"
+    files = os.listdir("scene_objects/data")
+    path = "scene_objects/data/"
 
     # create the BIG dataframe to store the features of all the objects
     df = pd.DataFrame(columns=['bname', 'label'])  # set the column names
